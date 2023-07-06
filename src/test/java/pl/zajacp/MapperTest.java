@@ -6,7 +6,7 @@ import pl.zajacp.model.GamesLog;
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static pl.zajacp.TestUtils.EXEMPLARY_REQUEST;
+import static pl.zajacp.test.TestData.GAMES_LOG_REQUEST;
 
 public class MapperTest {
 
@@ -15,7 +15,7 @@ public class MapperTest {
 
     void shouldProperlyMapRequestToDomain() throws IOException {
         //when
-        GamesLog gamesLog = MAPPER.readValue(EXEMPLARY_REQUEST, GamesLog.class);
+        GamesLog gamesLog = MAPPER.readValue(GAMES_LOG_REQUEST, GamesLog.class);
 
         //then
         assertEquals(199, gamesLog.getGamesLog().size());

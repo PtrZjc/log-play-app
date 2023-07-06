@@ -6,7 +6,7 @@
     <artifactId>lambda-demo</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-<!--https://github.com/aws/aws-sdk-java-v2/#using-the-sdk-->
+    <!--https://github.com/aws/aws-sdk-java-v2/#using-the-sdk-->
     <name>lambda-demo</name>
     <url>http://maven.apache.org</url>
 
@@ -19,6 +19,7 @@
         <aws.java.sdk.version>2.20.38</aws.java.sdk.version>
         <aws.lambda.java.version>1.2.2</aws.lambda.java.version>
         <junit5.version>5.9.2</junit5.version>
+        <testcontainers.version>1.18.3</testcontainers.version>
     </properties>
 
     <dependencies>
@@ -82,7 +83,13 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
-            <version>1.18.3</version>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
