@@ -2,14 +2,19 @@ package pl.zajacp;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+import lombok.AllArgsConstructor;
 import pl.zajacp.model.GameRecord;
 import pl.zajacp.model.GamesLog;
 import pl.zajacp.repository.DynamoDbRepository;
 
+@AllArgsConstructor
 public class PutGamesLogHandler implements RequestHandler<GamesLog, String> {
 
-    private final static DynamoDbRepository<GameRecord> gameItemRepository =
-            new DynamoDbRepository<>("games_log", GameRecord.class);
+    private DynamoDbRepository<GameRecord> gameItemRepository;
+
+    public PutGamesLogHandler() {
+        gameItemRepository = new DynamoDbRepository<>("games_log", GameRecord.class);
+    }
 
     @Override
     public String handleRequest(GamesLog gamesLog, Context context) {
