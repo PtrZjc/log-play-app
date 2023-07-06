@@ -21,16 +21,7 @@ public class GetGameRecordHandler implements RequestHandler<GetGameRecordRequest
 
     @Override
     public GameRecord handleRequest(GetGameRecordRequest getGameRecordRequest, Context context) {
-        var key = toItemQueryKey(getGameRecordRequest);
-        return gameItemRepository.getItem(key);
-    }
-
-
-    private ItemQueryKey toItemQueryKey(GetGameRecordRequest getGameRecordRequest) {
-        return new ItemQueryKey(
-                "gameName", getGameRecordRequest.getGameName(),
-                "timestamp", getGameRecordRequest.getTimestamp()
-        );
+        return gameItemRepository.getItem(getGameRecordRequest.toItemQuery());
     }
 }
 

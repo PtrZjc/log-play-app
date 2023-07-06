@@ -49,23 +49,6 @@ public class DynamoDbRepository<T> {
         return tableSchema.mapToItem(itemAsMap);
     }
 
-//    public void createTable() {
-//        client.createTable(CreateTableRequest.builder()
-//                .tableName(tableName)
-//                        .keySchema(KeySchemaElement.builder()
-//                                .attributeName("Id")
-//                                .keyType(KeyType.HASH)
-//                                .build())
-//                        .attributeDefinitions(AttributeDefinition.builder()
-//                                .attributeName(tableSchema.attributeNames())
-//                                .build())
-//                        .attributeDefinitions(AttributeDefinition.builder()
-//                                .attributeName(tableSchema.)
-//                                .build())
-//                .attributeDefinitions(tableSchema.attributeDefinitions())
-//                .build());
-//    }
-
     public String putItem(T gameRecord) {
         var map = tableSchema.itemToMap(gameRecord, true);
         var put = PutItemRequest.builder().tableName(tableName).item(map).build();

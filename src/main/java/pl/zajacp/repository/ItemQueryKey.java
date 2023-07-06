@@ -8,8 +8,9 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import java.util.HashMap;
 import java.util.Map;
 
-@Data
-@AllArgsConstructor
+import static lombok.AccessLevel.*;
+
+@AllArgsConstructor(access = PRIVATE)
 public class ItemQueryKey {
     @NonNull
     private String primaryKeyName;
@@ -17,6 +18,7 @@ public class ItemQueryKey {
     private Object primaryKey;
     private String sortKeyName;
     private Object sortKey;
+
     public Map<String, AttributeValue> toAttributeMap() {
         Map<String, AttributeValue> map = new HashMap<>();
         map.put(primaryKeyName, toAttributeValue(primaryKey));
@@ -24,6 +26,14 @@ public class ItemQueryKey {
             map.put(sortKeyName, toAttributeValue(sortKey));
         }
         return map;
+    }
+
+    public static ItemQueryKey of(String primaryKeyName, Object primaryKey) {
+        return new ItemQueryKey(primaryKeyName, primaryKey, null, null);
+    }
+
+    public static ItemQueryKey of(String primaryKeyName, Object primaryKey, String sortKeyName, Object sortKey) {
+        return new ItemQueryKey(primaryKeyName, primaryKey, sortKeyName, sortKey);
     }
 
     private AttributeValue toAttributeValue(Object attribute) {

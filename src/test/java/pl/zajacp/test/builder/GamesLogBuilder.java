@@ -9,7 +9,7 @@ import java.util.List;
 public class GamesLogBuilder {
     private List<GameRecord> gamesLog = new ArrayList<>();
 
-    static GamesLogBuilder aGamesLog() {
+    public static GamesLogBuilder aGamesLog() {
         return new GamesLogBuilder();
     }
 

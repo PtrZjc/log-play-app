@@ -12,8 +12,10 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortK
 
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
+@NoArgsConstructor
 @DynamoDbBean
 public class GameRecord {
     private Long timestamp;
