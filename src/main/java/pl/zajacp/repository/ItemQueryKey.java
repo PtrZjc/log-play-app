@@ -1,14 +1,13 @@
 package pl.zajacp.repository;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NonNull;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static lombok.AccessLevel.*;
+import static lombok.AccessLevel.PRIVATE;
 
 @AllArgsConstructor(access = PRIVATE)
 public class ItemQueryKey {

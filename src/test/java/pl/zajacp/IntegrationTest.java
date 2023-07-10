@@ -1,18 +1,11 @@
 package pl.zajacp;
 
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import pl.zajacp.model.GameRecord;
-import pl.zajacp.model.GamesLog;
 import pl.zajacp.repository.DynamoDbRepository;
-import pl.zajacp.repository.ItemQueryKey;
 import pl.zajacp.rest.model.GetGameRecordRequest;
 import pl.zajacp.test.FakeContext;
-import pl.zajacp.test.assertion.GameRecordAssertion;
-import pl.zajacp.test.builder.GameRecordBuilder;
-import pl.zajacp.test.builder.GamesLogBuilder;
-import pl.zajacp.test.builder.PlayerResultBuilder;
 import pl.zajacp.test.db.DbTableCreator;
 import pl.zajacp.test.db.DynamoDbContainer;
 import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
@@ -25,7 +18,6 @@ import static pl.zajacp.test.TestData.*;
 import static pl.zajacp.test.assertion.GameRecordAssertion.*;
 import static pl.zajacp.test.builder.GameRecordBuilder.*;
 import static pl.zajacp.test.builder.GamesLogBuilder.*;
-import static pl.zajacp.test.builder.PlayerResultBuilder.*;
 
 public class IntegrationTest {
 
@@ -41,31 +33,23 @@ public class IntegrationTest {
                 .endpointOverride(URI.create(DynamoDbContainer.getLocalhostPath()))
                 .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
                 .region(Region.EU_CENTRAL_1).build();
-        repository = new DynamoDbRepository<>(client, "test", GameRecord.class);
+        repository = new DynamoDbRepository<>(client, "games_log", GameRecord.class);
         putGamesLogHandler = new PutGamesLogHandler(repository);
         DbTableCreator.createTableWithCompositePrimaryKey(client, "gameName", "timestamp", "games_log");
     }
 
 
     @Test
-    @Disabled("DynamoDbException: One of the required keys was not given a value")
     public void shouldPutAndGetOneGame() {
         //given
         var gamesLog = aGamesLog()
                 .withGameRecord(aGameRecord()
                         .withGameName(GAME_NAME)
-                        .withTimestamp(TIMESTAMP)
-                        .withPlayerResult(aPlayerResult()
-                                .withPlayerName(PLAYER_1_NAME)
-                                .withPlayerScore(PLAYER_1_SCORE)
-                                .withIsWinner(true).build())
-                        .withPlayerResult(aPlayerResult()
-                                .withPlayerName(PLAYER_2_NAME)
-                                .withPlayerScore(PLAYER_2_SCORE).build())
+                        .withTimestamp(TIMESTAMP_2)
+                        .withStandard5PlayersResult()
                         .build()).build();
 
-
-        var getRequest = new GetGameRecordRequest(GAME_NAME, TIMESTAMP);
+        var getRequest = new GetGameRecordRequest(GAME_NAME, TIMESTAMP_2);
 
         //when
         putGamesLogHandler.handleRequest(gamesLog, new FakeContext());
@@ -75,17 +59,52 @@ public class IntegrationTest {
 
         assertThat(result)
                 .hasGameName(GAME_NAME)
+                .hasTimestamp(TIMESTAMP_2)
+                .hasGameDate(GAME_DATE)
+                .hasGameDescription(GAME_DESCRIPTION)
+                .isSolo(false)
+                .hasExpected5StandardPlayersResult();
+    }
+
+    @Test
+    public void shouldPutBatchAndGetMoreGames() {
+        //given
+        var gamesLog = aGamesLog()
+                .withGameRecord(aGameRecord()
+                        .withGameName(GAME_NAME)
+                        .withTimestamp(TIMESTAMP)
+                        .withStandard5PlayersResult()
+                        .build())
+                .withGameRecord(aGameRecord()
+                        .withGameName(GAME_NAME_2)
+                        .withTimestamp(TIMESTAMP_2)
+                        .withStandard5PlayersResult()
+                        .build()
+                ).build();
+
+        var getGame1Request = new GetGameRecordRequest(GAME_NAME, TIMESTAMP);
+        var getGame2Request = new GetGameRecordRequest(GAME_NAME_2, TIMESTAMP_2);
+
+        //when
+        putGamesLogHandler.handleRequest(gamesLog, new FakeContext());
+
+        //then
+        var game1 = repository.getItem(getGame1Request.toItemQuery());
+        var game2 = repository.getItem(getGame2Request.toItemQuery());
+
+        assertThat(game1)
+                .hasGameName(GAME_NAME)
                 .hasTimestamp(TIMESTAMP)
                 .hasGameDate(GAME_DATE)
                 .hasGameDescription(GAME_DESCRIPTION)
                 .isSolo(false)
-                .withPlayerResultOf(PLAYER_1_NAME)
-                .hasScore(PLAYER_1_SCORE)
-                .isWinner(true)
-                .and()
-                .withPlayerResultOf(PLAYER_2_NAME)
-                .hasScore(PLAYER_2_SCORE)
-                .isWinner(false);
-
+                .hasExpected5StandardPlayersResult();
+        assertThat(game2)
+                .hasGameName(GAME_NAME_2)
+                .hasTimestamp(TIMESTAMP_2)
+                .hasGameDate(GAME_DATE)
+                .hasGameDescription(GAME_DESCRIPTION)
+                .isSolo(false)
+                .hasExpected5StandardPlayersResult();
     }
 }

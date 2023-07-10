@@ -7,7 +7,9 @@ import java.math.BigDecimal;
 public class TestData {
 
     public final static Long TIMESTAMP = 1688666155L;
+    public final static Long TIMESTAMP_2 = 1689020155L;
     public final static String GAME_NAME = "Caverna";
+    public final static String GAME_NAME_2 = "Agricola";
     public final static String GAME_DATE = "2023-07-06";
     public final static String GAME_DESCRIPTION = "description";
     public final static String DURATION = "3:00";

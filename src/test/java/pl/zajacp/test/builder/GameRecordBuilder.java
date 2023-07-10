@@ -10,10 +10,21 @@ import static pl.zajacp.test.TestData.DURATION;
 import static pl.zajacp.test.TestData.GAME_DATE;
 import static pl.zajacp.test.TestData.GAME_DESCRIPTION;
 import static pl.zajacp.test.TestData.GAME_NAME;
-import static pl.zajacp.test.TestData.TIMESTAMP;
+import static pl.zajacp.test.TestData.PLAYER_1_NAME;
+import static pl.zajacp.test.TestData.PLAYER_1_SCORE;
+import static pl.zajacp.test.TestData.PLAYER_2_NAME;
+import static pl.zajacp.test.TestData.PLAYER_2_SCORE;
+import static pl.zajacp.test.TestData.PLAYER_3_NAME;
+import static pl.zajacp.test.TestData.PLAYER_3_SCORE;
+import static pl.zajacp.test.TestData.PLAYER_4_NAME;
+import static pl.zajacp.test.TestData.PLAYER_4_SCORE;
+import static pl.zajacp.test.TestData.PLAYER_5_NAME;
+import static pl.zajacp.test.TestData.PLAYER_5_SCORE;
+import static pl.zajacp.test.TestData.TIMESTAMP_2;
+import static pl.zajacp.test.builder.PlayerResultBuilder.aPlayerResult;
 
 public class GameRecordBuilder {
-    private Long timestamp = TIMESTAMP;
+    private Long timestamp = TIMESTAMP_2;
     private String gameName = GAME_NAME;
     private String gameDate = GAME_DATE;
     private String gameDescription = GAME_DESCRIPTION;
@@ -27,6 +38,26 @@ public class GameRecordBuilder {
 
     public GameRecord build() {
         return new GameRecord(timestamp, gameName, gameDate, gameDescription, solo, duration, playerResults);
+    }
+
+    public GameRecordBuilder withStandard5PlayersResult() {
+        withPlayerResult(aPlayerResult()
+                .withPlayerName(PLAYER_1_NAME)
+                .withPlayerScore(PLAYER_1_SCORE)
+                .withIsWinner(true).build())
+                .withPlayerResult(aPlayerResult()
+                        .withPlayerName(PLAYER_2_NAME)
+                        .withPlayerScore(PLAYER_2_SCORE).build())
+                .withPlayerResult(aPlayerResult()
+                        .withPlayerName(PLAYER_3_NAME)
+                        .withPlayerScore(PLAYER_3_SCORE).build())
+                .withPlayerResult(aPlayerResult()
+                        .withPlayerName(PLAYER_4_NAME)
+                        .withPlayerScore(PLAYER_4_SCORE).build())
+                .withPlayerResult(aPlayerResult()
+                        .withPlayerName(PLAYER_5_NAME)
+                        .withPlayerScore(PLAYER_5_SCORE).build());
+        return this;
     }
 
     public GameRecordBuilder withTimestamp(Long timestamp) {
