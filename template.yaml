@@ -1,0 +1,42 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Resources:
+  GetGameRecord:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: pl.zajacp.GetGameRecordHandler
+      Runtime: java11
+      MemorySize: 512
+      Timeout: 10
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: games_log
+
+  PutGamesLog:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: pl.zajacp.GetGameRecordHandler
+      Runtime: java11
+      MemorySize: 512
+      Timeout: 10
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: games_log
+
+#  MyDynamoDBTable:
+#    Type: AWS::DynamoDB::Table
+#    Properties:
+#      TableName: MyDynamoDBTable
+#      AttributeDefinitions:
+#        - AttributeName: hashKeyName
+#          AttributeType: S
+#        - AttributeName: rangeKeyName
+#          AttributeType: N
+#      KeySchema:
+#        - AttributeName: hashKeyName
+#          KeyType: HASH
+#        - AttributeName: rangeKeyName
+#          KeyType: RANGE
+#      ProvisionedThroughput:
+#        ReadCapacityUnits: 5
+#        WriteCapacityUnits: 5

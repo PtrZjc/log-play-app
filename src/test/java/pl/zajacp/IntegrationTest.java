@@ -8,7 +8,8 @@ import pl.zajacp.rest.model.GetGameRecordRequest;
 import pl.zajacp.test.FakeContext;
 import pl.zajacp.test.db.DbTableCreator;
 import pl.zajacp.test.db.DynamoDbContainer;
-import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
@@ -31,7 +32,7 @@ public class IntegrationTest {
         client = DynamoDbClient.builder()
 //                .endpointOverride(URI.create("http://localhost:8000"))
                 .endpointOverride(URI.create(DynamoDbContainer.getLocalhostPath()))
-                .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
+                .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create("local", "local")))
                 .region(Region.EU_CENTRAL_1).build();
         repository = new DynamoDbRepository<>(client, "games_log", GameRecord.class);
         putGamesLogHandler = new PutGamesLogHandler(repository);
