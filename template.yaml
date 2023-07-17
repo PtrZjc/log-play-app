@@ -5,6 +5,7 @@ Resources:
   GetGameRecord:
     Type: AWS::Serverless::Function
     Properties:
+      CodeUri: ./target/log-play-app.jar
       Handler: pl.zajacp.GetGameRecordHandler
       Runtime: java11
       MemorySize: 512
@@ -16,6 +17,7 @@ Resources:
   PutGamesLog:
     Type: AWS::Serverless::Function
     Properties:
+      CodeUri: ./target/log-play-app.jar
       Handler: pl.zajacp.GetGameRecordHandler
       Runtime: java11
       MemorySize: 512

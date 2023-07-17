@@ -1,0 +1,86 @@
+openapi: 3.0.0
+info:
+  title: Game Records API
+  version: 1.0.0
+paths:
+  /games/log:
+    put:
+      summary: Performs PUT on every single game record inside a log
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GameLog'
+      responses:
+        '200':
+          description: OK
+    get:
+      summary: Get all game logs
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GameLog'
+  /games:
+    get:
+      summary: Get specific game record
+      parameters:
+        - name: gameName
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: timestamp
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameLog'
+components:
+  schemas:
+    GameLog:
+      type: object
+      properties:
+        gamesLog:
+          type: array
+          items:
+            $ref: '#/components/schemas/GameRecord'
+    GameRecord:
+      type: object
+      required: [ gameName, timestamp, gameDate, playerResults ]
+      properties:
+        timestamp:
+          type: integer
+          format: int64
+        gameName:
+          type: string
+        gameDate:
+          type: string
+          format: date
+        playerResults:
+          type: array
+          items:
+            type: object
+            required: [ playerName ]
+            properties:
+              playerName:
+                type: string
+              playerScore:
+                type: integer
+              isWinner:
+                type: boolean
+                default: false
+              comment:
+                type: string
