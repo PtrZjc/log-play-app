@@ -2,44 +2,66 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: 'AWS::Serverless-2016-10-31'
 
 Resources:
-  GetGameRecord:
+  getGameRecord:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ./target/log-play-app.jar
       Handler: pl.zajacp.GetGameRecordHandler
-      Runtime: java11
+      Runtime: java17
       MemorySize: 512
       Timeout: 10
+      Description: Get single game
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: games_log
+            TableName: !Ref GamesLogTable
+      Environment:
+        Variables:
+          GAMES_LOG_TABLE: !Ref GamesLogTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /games
+            Method: GET
 
-  PutGamesLog:
+  putGamesLog:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ./target/log-play-app.jar
-      Handler: pl.zajacp.GetGameRecordHandler
-      Runtime: java11
+      Handler: pl.zajacp.PutGamesLogHandler
+      Runtime: java17
       MemorySize: 512
       Timeout: 10
+      Description: Patch one or more games
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: games_log
+            TableName: !Ref GamesLogTable
+      Environment:
+        Variables:
+          GAMES_LOG_TABLE: !Ref GamesLogTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /games/log
+            Method: POST
 
-#  MyDynamoDBTable:
-#    Type: AWS::DynamoDB::Table
-#    Properties:
-#      TableName: MyDynamoDBTable
-#      AttributeDefinitions:
-#        - AttributeName: hashKeyName
-#          AttributeType: S
-#        - AttributeName: rangeKeyName
-#          AttributeType: N
-#      KeySchema:
-#        - AttributeName: hashKeyName
-#          KeyType: HASH
-#        - AttributeName: rangeKeyName
-#          KeyType: RANGE
-#      ProvisionedThroughput:
-#        ReadCapacityUnits: 5
-#        WriteCapacityUnits: 5
+  GamesLogTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: gameName
+          AttributeType: S
+        - AttributeName: timestamp
+          AttributeType: N
+      KeySchema:
+        - AttributeName: gameName
+          KeyType: HASH
+        - AttributeName: timestamp
+          KeyType: RANGE
+      BillingMode: PAY_PER_REQUEST
+
+Outputs:
+  WebEndpoint:
+    Description: "API Gateway endpoint URL for Prod stage"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"

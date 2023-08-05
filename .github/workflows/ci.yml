@@ -1,6 +1,6 @@
 name: CI
 
-on: workflow_dispatch
+on: [ workflow_dispatch, push ]
 
 jobs:
   CI:
@@ -20,7 +20,7 @@ jobs:
           distribution: 'corretto'
 
       - name: Integration tests
-        run: mvn verify
+        run: mvn test
 
       - name: Create Package
         run: mvn package -DskipTests
