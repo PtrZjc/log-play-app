@@ -60,7 +60,7 @@ public class DynamoDbRepository<T> {
                 .stream()
                 .map(this::mapToBatchWriteRequest)
                 .map(client::batchWriteItem)
-                .collect(Collectors.toList());
+                .toList();
 
         return batchWriteResponses.toString();
     }
@@ -70,7 +70,7 @@ public class DynamoDbRepository<T> {
                 .map(i -> tableSchema.itemToMap(i, true))
                 .map(m -> PutRequest.builder().item(m).build())
                 .map(p -> WriteRequest.builder().putRequest(p).build())
-                .collect(Collectors.toList());
+                .toList();
 
         return BatchWriteItemRequest.builder()
                 .requestItems(Collections.singletonMap(tableName, putRequests))
