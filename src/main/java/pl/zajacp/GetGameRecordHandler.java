@@ -10,7 +10,7 @@ import pl.zajacp.model.GameRecord;
 import pl.zajacp.repository.DynamoDbRepository;
 import pl.zajacp.repository.GamesLogRepository;
 import pl.zajacp.repository.ItemQueryKey;
-import pl.zajacp.shared.ObjectMapper;
+import pl.zajacp.shared.ObjMapper;
 
 import java.util.Map;
 
@@ -26,7 +26,7 @@ public class GetGameRecordHandler implements RequestHandler<APIGatewayProxyReque
     private final DynamoDbRepository<GameRecord> gameItemRepository;
 
     public GetGameRecordHandler() {
-        this.gameItemRepository = GamesLogRepository.getInstance();
+        this.gameItemRepository = GamesLogRepository.INSTANCE.get();
     }
 
     @Override
@@ -52,7 +52,7 @@ public class GetGameRecordHandler implements RequestHandler<APIGatewayProxyReque
             return new APIGatewayProxyResponseEvent().withStatusCode(404);
         }
 
-        String gameJson = ObjectMapper.get().writeValueAsString(item.get());
+        String gameJson = ObjMapper.INSTANCE.get().writeValueAsString(item.get());
 
         var response = new APIGatewayProxyResponseEvent();
         response.setBody(gameJson);

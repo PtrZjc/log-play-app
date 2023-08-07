@@ -2,17 +2,31 @@ package pl.zajacp.repository;
 
 import pl.zajacp.model.GameRecord;
 
-public class GamesLogRepository {
+public enum GamesLogRepository {
+    INSTANCE;
 
-    private final static String GAMES_LOG_TABLE = System.getenv("GAMES_LOG_TABLE");
+    private final DynamoDbRepository<GameRecord> repository;
 
-    private static class InstanceHolder {
-        private static final DynamoDbRepository<GameRecord> repository =
-                new DynamoDbRepository<>(GAMES_LOG_TABLE, GameRecord.class);
+    private final static String GAMES_LOG_TABLE_ENV = "GAMES_LOG_TABLE";
 
+    GamesLogRepository() {
+        repository = new DynamoDbRepository<>(getGamesLogTableName(), GameRecord.class);
     }
 
-    public static DynamoDbRepository<GameRecord> getInstance() {
-        return InstanceHolder.repository;
+    public DynamoDbRepository<GameRecord> get() {
+        return repository;
+    }
+
+    private String getGamesLogTableName() {
+        String value = System.getenv(GAMES_LOG_TABLE_ENV);
+        if (value == null || value.trim().isEmpty()) {
+            throw new IllegalStateException("Environment variable " + GAMES_LOG_TABLE_ENV + " is not set or is empty.");
+        }
+        return value;
     }
 }
+
+
+
+
+

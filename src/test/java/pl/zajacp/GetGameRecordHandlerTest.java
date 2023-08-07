@@ -9,7 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pl.zajacp.model.GameRecord;
 import pl.zajacp.repository.DynamoDbRepository;
-import pl.zajacp.shared.ObjectMapper;
+import pl.zajacp.shared.ObjMapper;
 import pl.zajacp.test.FakeContext;
 import pl.zajacp.test.db.DynamoDbContainer;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -35,14 +35,14 @@ public class GetGameRecordHandlerTest {
     private static GetGameRecordHandler getGameRecordHandler;
     private static DynamoDbRepository<GameRecord> repository;
 
-    private static final com.fasterxml.jackson.databind.ObjectMapper MAPPER = ObjectMapper.get();
+    private static final com.fasterxml.jackson.databind.ObjectMapper MAPPER = ObjMapper.INSTANCE.get();
 
     @BeforeAll
     public static void beforeAll() {
         DynamoDbContainer.startContainer();
         client = DynamoDbClient.builder()
-//                .endpointOverride(URI.create(DynamoDbContainer.getLocalhostPath()))
-                .endpointOverride(URI.create("http://localhost:8000"))
+                .endpointOverride(URI.create(DynamoDbContainer.getLocalhostPath()))
+//                .endpointOverride(URI.create("http://localhost:8000"))
                 .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create("local", "local")))
                 .region(Region.EU_CENTRAL_1).build();
         repository = new DynamoDbRepository<>(client, "games_log", GameRecord.class);
@@ -113,7 +113,7 @@ public class GetGameRecordHandlerTest {
         //then
         assertEquals(400, responseEvent.getStatusCode());
 
-        var bodyMap = ObjectMapper.get().readValue(responseEvent.getBody(), Map.class);
+        var bodyMap = ObjMapper.INSTANCE.get().readValue(responseEvent.getBody(), Map.class);
 
         Map<String, String> errors = (Map) bodyMap.get("errors");
 
@@ -135,7 +135,7 @@ public class GetGameRecordHandlerTest {
         //then
         assertEquals(400, responseEvent.getStatusCode());
 
-        var bodyMap = ObjectMapper.get().readValue(responseEvent.getBody(), Map.class);
+        var bodyMap = ObjMapper.INSTANCE.get().readValue(responseEvent.getBody(), Map.class);
 
         Map<String, String> errors = (Map) bodyMap.get("errors");
 

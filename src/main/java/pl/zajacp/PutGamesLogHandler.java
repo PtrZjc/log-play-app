@@ -13,7 +13,7 @@ import pl.zajacp.repository.GamesLogRepository;
 @AllArgsConstructor
 public class PutGamesLogHandler implements RequestHandler<GamesLog, String> {
 
-    private DynamoDbRepository<GameRecord> gameItemRepository = GamesLogRepository.getInstance();
+    private DynamoDbRepository<GameRecord> gameItemRepository = GamesLogRepository.INSTANCE.get();
 
     @Override
     public String handleRequest(GamesLog gamesLog, Context context) {

@@ -3,7 +3,7 @@ package pl.zajacp.rest;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import pl.zajacp.shared.ObjectMapper;
+import pl.zajacp.shared.ObjMapper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +34,7 @@ public class RequestValidator {
             APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
             response.setStatusCode(400);
             response.setBody("Errors: " + errors);
-            var jsonErrors = ObjectMapper.get().writeValueAsString(Map.of("errors", errors));
+            var jsonErrors = ObjMapper.INSTANCE.get().writeValueAsString(Map.of("errors", errors));
             response.setBody(jsonErrors);
             return Optional.of(response);
         }
