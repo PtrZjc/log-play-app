@@ -16,6 +16,7 @@ import software.amazon.awssdk.services.dynamodb.model.WriteRequest;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class DynamoDbRepository<T> {
@@ -39,14 +40,14 @@ public class DynamoDbRepository<T> {
         this.tableSchema = TableSchema.fromBean(itemType);
     }
 
-    public T getItem(ItemQueryKey itemQueryKey) {
+    public Optional<T> getItem(ItemQueryKey itemQueryKey) {
         var getRequest = GetItemRequest.builder()
                 .tableName(tableName)
                 .key(itemQueryKey.toAttributeMap())
                 .build();
 
         var itemAsMap = client.getItem(getRequest).item();
-        return tableSchema.mapToItem(itemAsMap);
+        return Optional.ofNullable(tableSchema.mapToItem(itemAsMap));
     }
 
     public String putItem(T gameRecord) {

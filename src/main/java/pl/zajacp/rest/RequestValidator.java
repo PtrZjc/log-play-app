@@ -2,6 +2,8 @@ package pl.zajacp.rest;
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import pl.zajacp.shared.ObjectMapper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +11,7 @@ import java.util.Optional;
 
 public class RequestValidator {
 
-    public static Optional<APIGatewayProxyResponseEvent> validateParameters(APIGatewayProxyRequestEvent event, Map<String, ParameterInfo> requiredParams) {
+    public static Optional<APIGatewayProxyResponseEvent> validateParameters(APIGatewayProxyRequestEvent event, Map<String, ParameterInfo> requiredParams) throws JsonProcessingException {
         Map<String, String> errors = new HashMap<>();
 
         for (Map.Entry<String, ParameterInfo> entry : requiredParams.entrySet()) {
@@ -24,7 +26,7 @@ public class RequestValidator {
             if (actualValue == null) {
                 errors.put(paramName, "Parameter is missing");
             } else if (paramInfo.dataType == DataType.NUMBER && !actualValue.matches("\\d+")) {
-                errors.put(paramName, "Not a valid number");
+                errors.put(paramName, "Not a valid integer number");
             }
         }
 
@@ -32,6 +34,8 @@ public class RequestValidator {
             APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
             response.setStatusCode(400);
             response.setBody("Errors: " + errors);
+            var jsonErrors = ObjectMapper.get().writeValueAsString(Map.of("errors", errors));
+            response.setBody(jsonErrors);
             return Optional.of(response);
         }
         return Optional.empty();

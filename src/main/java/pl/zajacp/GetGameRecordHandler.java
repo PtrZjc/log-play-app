@@ -4,19 +4,14 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import pl.zajacp.model.GameRecord;
 import pl.zajacp.repository.DynamoDbRepository;
 import pl.zajacp.repository.GamesLogRepository;
 import pl.zajacp.repository.ItemQueryKey;
-import pl.zajacp.rest.RequestValidator;
-import pl.zajacp.rest.model.GetGameRecordRequest;
-import pl.zajacp.shared.ObjectMapperSingleton;
+import pl.zajacp.shared.ObjectMapper;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static pl.zajacp.rest.RequestValidator.*;
@@ -52,11 +47,16 @@ public class GetGameRecordHandler implements RequestHandler<APIGatewayProxyReque
                 "timestamp", Long.valueOf(apiGatewayProxyRequestEvent.getQueryStringParameters().get("timestamp"))
         );
 
-        String gameJson = ObjectMapperSingleton.getInstance()
-                .writeValueAsString(gameItemRepository.getItem(itemQueryKey));
+        var item = gameItemRepository.getItem(itemQueryKey);
+        if(item.isEmpty()) {
+            return new APIGatewayProxyResponseEvent().withStatusCode(404);
+        }
+
+        String gameJson = ObjectMapper.get().writeValueAsString(item.get());
 
         var response = new APIGatewayProxyResponseEvent();
         response.setBody(gameJson);
+        response.setStatusCode(200);
         response.setHeaders(Map.of("Content-Type", "application/json"));
         return response;
     }

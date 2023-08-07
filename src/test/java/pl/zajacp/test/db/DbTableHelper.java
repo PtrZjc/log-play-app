@@ -11,8 +11,8 @@ import software.amazon.awssdk.services.dynamodb.model.ProvisionedThroughput;
 import software.amazon.awssdk.services.dynamodb.model.ResourceInUseException;
 import software.amazon.awssdk.services.dynamodb.model.ScalarAttributeType;
 
-public class DbTableCreator {
-    public static String createTableWithCompositePrimaryKey(DynamoDbClient client, String hashKeyName, String rangeKeyName, String tableName) {
+public class DbTableHelper {
+    public static void createTableWithCompositePrimaryKey(DynamoDbClient client, String hashKeyName, String rangeKeyName, String tableName) {
         CreateTableRequest request = CreateTableRequest.builder()
                 .attributeDefinitions(
                         AttributeDefinition.builder()
@@ -55,6 +55,10 @@ public class DbTableCreator {
         } catch (ResourceInUseException e) {
             System.out.printf("Table %s already exists, no need to create new", tableName);
         }
-        return newTable;
+        //return newTable;
+    }
+
+    public static void deleteTable(DynamoDbClient client, String tableName) {
+        client.deleteTable(b -> b.tableName(tableName));
     }
 }
