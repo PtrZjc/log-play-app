@@ -1,7 +1,6 @@
 package pl.zajacp.repository;
 
 import lombok.AllArgsConstructor;
-import lombok.NonNull;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.util.HashMap;
@@ -11,9 +10,7 @@ import static lombok.AccessLevel.PRIVATE;
 
 @AllArgsConstructor(access = PRIVATE)
 public class ItemQueryKey {
-    @NonNull
     private String primaryKeyName;
-    @NonNull
     private Object primaryKey;
     private String sortKeyName;
     private Object sortKey;

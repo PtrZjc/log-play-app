@@ -28,14 +28,12 @@ public class RequestValidator {
             }
         }
 
-
         if (!errors.isEmpty()) {
             APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
             response.setStatusCode(400);
             response.setBody("Errors: " + errors);
             return Optional.of(response);
         }
-
         return Optional.empty();
     }
 

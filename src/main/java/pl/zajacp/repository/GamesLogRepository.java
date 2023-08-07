@@ -8,7 +8,7 @@ public class GamesLogRepository {
 
     private static class InstanceHolder {
         private static final DynamoDbRepository<GameRecord> repository =
-                new DynamoDbRepository<>(GAMES_LOG_TABLE, GameRecord .class);
+                new DynamoDbRepository<>(GAMES_LOG_TABLE, GameRecord.class);
 
     }
 

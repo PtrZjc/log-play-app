@@ -21,6 +21,7 @@ public class GameRecordAssertion {
     private final GameRecord gameRecord;
 
     public static GameRecordAssertion assertThat(GameRecord gameRecord) {
+        Assertions.assertNotNull(gameRecord);
         return new GameRecordAssertion(gameRecord);
     }
 

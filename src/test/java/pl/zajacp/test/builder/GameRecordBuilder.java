@@ -20,11 +20,12 @@ import static pl.zajacp.test.TestData.PLAYER_4_NAME;
 import static pl.zajacp.test.TestData.PLAYER_4_SCORE;
 import static pl.zajacp.test.TestData.PLAYER_5_NAME;
 import static pl.zajacp.test.TestData.PLAYER_5_SCORE;
+import static pl.zajacp.test.TestData.TIMESTAMP;
 import static pl.zajacp.test.TestData.TIMESTAMP_2;
 import static pl.zajacp.test.builder.PlayerResultBuilder.aPlayerResult;
 
 public class GameRecordBuilder {
-    private Long timestamp = TIMESTAMP_2;
+    private Long timestamp = TIMESTAMP;
     private String gameName = GAME_NAME;
     private String gameDate = GAME_DATE;
     private String gameDescription = GAME_DESCRIPTION;
