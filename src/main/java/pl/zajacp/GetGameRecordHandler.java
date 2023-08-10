@@ -4,24 +4,33 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
 import pl.zajacp.model.GameRecord;
 import pl.zajacp.repository.DynamoDbRepository;
 import pl.zajacp.repository.GamesLogRepository;
 import pl.zajacp.repository.ItemQueryKey;
 import pl.zajacp.shared.ObjMapper;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-import static pl.zajacp.rest.RequestValidator.*;
-import static pl.zajacp.rest.RequestValidator.DataType.*;
-import static pl.zajacp.rest.RequestValidator.ParamType.*;
-
-//https://docs.aws.amazon.com/sdk-for-java/latest/developer-guide/migration-whats-different.html
+import static pl.zajacp.rest.GetRequestValidator.*;
+import static pl.zajacp.rest.GetRequestValidator.DataType.*;
+import static pl.zajacp.rest.GetRequestValidator.ParamType.*;
 
 @AllArgsConstructor
 public class GetGameRecordHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+
+    private static final String GAME_NAME = "gameName";
+    private static final String TIMESTAMP = "timestamp";
+
+    private static final List<RequiredParam> REQUIRED_PARAMS = List.of(
+            new RequiredParam(GAME_NAME, QUERY, STRING),
+            new RequiredParam(TIMESTAMP, QUERY, INTEGER)
+    );
 
     private final DynamoDbRepository<GameRecord> gameItemRepository;
 
@@ -30,34 +39,58 @@ public class GetGameRecordHandler implements RequestHandler<APIGatewayProxyReque
     }
 
     @Override
-    @SneakyThrows
-    public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent, Context context) {
-        var requiredParams = Map.of(
-                "gameName", new ParameterInfo(QUERY, STRING),
-                "timestamp", new ParameterInfo(QUERY, NUMBER)
-        );
-        var validationErrorResponse = validateParameters(apiGatewayProxyRequestEvent, requiredParams);
+    public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
+        context.getLogger().log("Received request: " + requestEvent);
 
-        if (validationErrorResponse.isPresent()) {
-            return validationErrorResponse.get();
+        var responseEvent = new APIGatewayProxyResponseEvent();
+        try {
+            Map<String, String> validationErrors = validateParameters(requestEvent, REQUIRED_PARAMS);
+
+            if (!validationErrors.isEmpty()) {
+                return getValidationFailedResponseEvent(validationErrors);
+            }
+
+            Map<String, String> queryParams = Optional.ofNullable(requestEvent.getQueryStringParameters())
+                    .orElse(Collections.emptyMap());
+
+            ItemQueryKey itemQueryKey = ItemQueryKey.of(
+                    GAME_NAME, queryParams.get(GAME_NAME),
+                    TIMESTAMP, Long.valueOf(queryParams.get(TIMESTAMP))
+            );
+
+            Optional<GameRecord> item = gameItemRepository.getItem(itemQueryKey);
+            if (item.isEmpty()) {
+                return new APIGatewayProxyResponseEvent()
+                        .withBody(asErrorJson("Game record not found"))
+                        .withStatusCode(404);
+            }
+
+            String gameJson = ObjMapper.INSTANCE.get().writeValueAsString(item.get());
+
+            responseEvent
+                    .withBody(gameJson)
+                    .withStatusCode(200);
+
+        } catch (Exception e) {
+            context.getLogger().log("Error processing request: " + e.getMessage());
+            responseEvent
+                    .withBody(asErrorJson("Internal server error"))
+                    .withStatusCode(500);
         }
+        responseEvent.withHeaders(Map.of("Content-Type", "application/json"));
+        return responseEvent;
+    }
 
-        ItemQueryKey itemQueryKey = ItemQueryKey.of(
-                "gameName", apiGatewayProxyRequestEvent.getQueryStringParameters().get("gameName"),
-                "timestamp", Long.valueOf(apiGatewayProxyRequestEvent.getQueryStringParameters().get("timestamp"))
-        );
-
-        var item = gameItemRepository.getItem(itemQueryKey);
-        if(item.isEmpty()) {
-            return new APIGatewayProxyResponseEvent().withStatusCode(404);
-        }
-
-        String gameJson = ObjMapper.INSTANCE.get().writeValueAsString(item.get());
-
-        var response = new APIGatewayProxyResponseEvent();
-        response.setBody(gameJson);
-        response.setStatusCode(200);
-        response.setHeaders(Map.of("Content-Type", "application/json"));
+    private APIGatewayProxyResponseEvent getValidationFailedResponseEvent(Map<String, String> validationErrors) throws JsonProcessingException {
+        APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
+        response.setStatusCode(400);
+        var jsonErrors = ObjMapper.INSTANCE.get().writeValueAsString(Map.of("errors", validationErrors));
+        response.setBody(jsonErrors);
         return response;
     }
+
+    private static String asErrorJson(String reason) {
+        return "{\"error\": \"" + reason + "\"}";
+    }
 }
+
