@@ -25,8 +25,3 @@ public enum GamesLogRepository {
         return value;
     }
 }
-
-
-
-
-

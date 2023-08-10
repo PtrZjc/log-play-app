@@ -1,12 +1,6 @@
 package pl.zajacp.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
 import java.util.List;
 
-@Data
-@AllArgsConstructor
-public class GamesLog {
-    private List<GameRecord> gamesLog;
+public record GamesLog(List<GameRecord> games) {
 }

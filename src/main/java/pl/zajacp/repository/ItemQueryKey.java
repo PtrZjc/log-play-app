@@ -36,7 +36,7 @@ public class ItemQueryKey {
         var builder = AttributeValue.builder();
         if (attribute instanceof String) {
             return builder.s(attribute.toString()).build();
-        } else if (attribute instanceof Long) {
+        } else if (attribute instanceof Number) {
             return builder.n(attribute.toString()).build();
         }
         //add when needed
