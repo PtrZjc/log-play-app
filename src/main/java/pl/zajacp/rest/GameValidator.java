@@ -12,46 +12,47 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class PutRequestValidator {
+public class GameValidator {
 
     public final static String REQUIRED_PARAM = "Required parameter is missing";
     public final static String INVALID_DATE = "Invalid date format. Expected 'yyyy-MM-dd'";
     public final static String NON_EMPTY_REQUIRED = "Non-empty parameter required";
 
     private final static List<RequiredProperty> GAME_RECORD_REQUIRED_PROPERTIES = List.of(
-            new RequiredProperty("gameName", REQUIRED_PARAM,
+            new RequiredProperty("gameName", NON_EMPTY_REQUIRED,
                     gr -> gr.getGameName() == null || gr.getGameName().isEmpty()),
             new RequiredProperty("timestamp", REQUIRED_PARAM,
                     gr -> gr.getTimestamp() == null),
             new RequiredProperty("gameDate", REQUIRED_PARAM,
                     gr -> gr.getGameDate() == null),
             new RequiredProperty("gameDate", INVALID_DATE,
-                    gr -> !isValidDate(gr.getGameDate())),
+                    gr -> gr.getGameDate() != null && !isValidDate(gr.getGameDate())),
             new RequiredProperty("playerResults", NON_EMPTY_REQUIRED,
                     gr -> gr.getPlayerResults() == null || gr.getPlayerResults().isEmpty())
     );
 
     public static Map<String, String> validateGamesLog(GamesLog gamesLog) {
         return gamesLog == null || gamesLog.games() == null || gamesLog.games().isEmpty() ?
-                Map.of("gamesLog", "GamesLog cannot be null or empty") :
+                Map.of("games", NON_EMPTY_REQUIRED) :
                 IntStream.range(0, gamesLog.games().size())
                         .boxed()
                         .map(i -> new IndexedGameRecordErrors(i, validateGameRecord(gamesLog.games().get(i))))
                         .filter(igre -> !igre.gameRecordErrors().isEmpty())
                         .flatMap(igre -> igre.gameRecordErrors()
                                 .entrySet().stream()
-                                .map(entry -> IndexedPropertyError.of(igre, entry)))
+                                .map(entry -> IndexedPropertyError.of(igre.index(), entry)))
                         .collect(Collectors.toMap(
                                 ipe -> String.format("games[%s].%s", ipe.index(), ipe.propertyName()),
                                 IndexedPropertyError::errorMessage));
     }
 
-    private static Map<String, String> validateGameRecord(GameRecord record) {
+    public static Map<String, String> validateGameRecord(GameRecord record) {
         var failingProperties = GAME_RECORD_REQUIRED_PROPERTIES.stream()
                 .filter(p -> p.failingPredicate.test(record))
+                .peek(System.out::println)
                 .collect(Collectors.toMap(
-                        rp -> rp.propertyName,
-                        rp -> rp.errorMessage
+                        failedProp -> failedProp.propertyName,
+                        failedProp -> failedProp.errorMessage
                 ));
         if (!failingProperties.containsKey("playerResults")) {
             failingProperties.putAll(validatePlayerNames(record));
@@ -63,7 +64,7 @@ public class PutRequestValidator {
         return IntStream.range(0, record.getPlayerResults().size())
                 .boxed()
                 .filter(i -> record.getPlayerResults().get(i).getPlayerName() == null || record.getPlayerResults().get(i).getPlayerName().isEmpty())
-                .collect(Collectors.toMap(i -> "playerResults[" + i + "].playerName", i -> REQUIRED_PARAM));
+                .collect(Collectors.toMap(i -> "playerResults[" + i + "].playerName", i -> NON_EMPTY_REQUIRED));
     }
 
     private static boolean isValidDate(String date) {
@@ -87,8 +88,8 @@ public class PutRequestValidator {
     }
 
     private record IndexedPropertyError(Integer index, String propertyName, String errorMessage) {
-        private static IndexedPropertyError of(IndexedGameRecordErrors igre, Map.Entry<String, String> propertyNameToErrorMessage) {
-            return new IndexedPropertyError(igre.index(), propertyNameToErrorMessage.getKey(), propertyNameToErrorMessage.getValue());
+        private static IndexedPropertyError of(Integer index, Map.Entry<String, String> propertyNameToErrorMessage) {
+            return new IndexedPropertyError(index, propertyNameToErrorMessage.getKey(), propertyNameToErrorMessage.getValue());
         }
     }
 }

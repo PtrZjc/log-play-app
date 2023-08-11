@@ -11,7 +11,7 @@ import pl.zajacp.model.GameRecord;
 import pl.zajacp.model.GamesLog;
 import pl.zajacp.repository.DynamoDbRepository;
 import pl.zajacp.repository.GamesLogRepository;
-import pl.zajacp.rest.PutRequestValidator;
+import pl.zajacp.rest.GameValidator;
 import pl.zajacp.shared.ObjMapper;
 
 import java.util.Map;
@@ -31,7 +31,7 @@ public class PutGamesLogHandler implements RequestHandler<APIGatewayProxyRequest
         try {
             GamesLog gamesLog = ObjMapper.INSTANCE.get().readValue(requestEvent.getBody(), GamesLog.class);
 
-            PutRequestValidator.validateGamesLog(gamesLog);
+            GameValidator.validateGamesLog(gamesLog);
 
             String resultMessage = gamesLog.games().size() == 1
                     ? gameItemRepository.putItem(gamesLog.games().get(0))

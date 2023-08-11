@@ -1,4 +1,4 @@
-package pl.zajacp.test.builder;
+package pl.zajacp.test.domain;
 
 import pl.zajacp.model.GameRecord;
 import pl.zajacp.model.PlayerResult;
@@ -6,23 +6,22 @@ import pl.zajacp.model.PlayerResult;
 import java.util.ArrayList;
 import java.util.List;
 
-import static pl.zajacp.test.TestData.DURATION;
-import static pl.zajacp.test.TestData.GAME_DATE;
-import static pl.zajacp.test.TestData.GAME_DESCRIPTION;
-import static pl.zajacp.test.TestData.GAME_NAME;
-import static pl.zajacp.test.TestData.PLAYER_1_NAME;
-import static pl.zajacp.test.TestData.PLAYER_1_SCORE;
-import static pl.zajacp.test.TestData.PLAYER_2_NAME;
-import static pl.zajacp.test.TestData.PLAYER_2_SCORE;
-import static pl.zajacp.test.TestData.PLAYER_3_NAME;
-import static pl.zajacp.test.TestData.PLAYER_3_SCORE;
-import static pl.zajacp.test.TestData.PLAYER_4_NAME;
-import static pl.zajacp.test.TestData.PLAYER_4_SCORE;
-import static pl.zajacp.test.TestData.PLAYER_5_NAME;
-import static pl.zajacp.test.TestData.PLAYER_5_SCORE;
-import static pl.zajacp.test.TestData.TIMESTAMP;
-import static pl.zajacp.test.TestData.TIMESTAMP_2;
-import static pl.zajacp.test.builder.PlayerResultBuilder.aPlayerResult;
+import static pl.zajacp.test.domain.PlayerResultBuilder.*;
+import static pl.zajacp.test.utils.TestData.DURATION;
+import static pl.zajacp.test.utils.TestData.GAME_DATE;
+import static pl.zajacp.test.utils.TestData.GAME_DESCRIPTION;
+import static pl.zajacp.test.utils.TestData.GAME_NAME;
+import static pl.zajacp.test.utils.TestData.PLAYER_1_NAME;
+import static pl.zajacp.test.utils.TestData.PLAYER_1_SCORE;
+import static pl.zajacp.test.utils.TestData.PLAYER_2_NAME;
+import static pl.zajacp.test.utils.TestData.PLAYER_2_SCORE;
+import static pl.zajacp.test.utils.TestData.PLAYER_3_NAME;
+import static pl.zajacp.test.utils.TestData.PLAYER_3_SCORE;
+import static pl.zajacp.test.utils.TestData.PLAYER_4_NAME;
+import static pl.zajacp.test.utils.TestData.PLAYER_4_SCORE;
+import static pl.zajacp.test.utils.TestData.PLAYER_5_NAME;
+import static pl.zajacp.test.utils.TestData.PLAYER_5_SCORE;
+import static pl.zajacp.test.utils.TestData.TIMESTAMP;
 
 public class GameRecordBuilder {
     private Long timestamp = TIMESTAMP;
@@ -37,15 +36,17 @@ public class GameRecordBuilder {
         return new GameRecordBuilder();
     }
 
+
     public GameRecord build() {
         return new GameRecord(timestamp, gameName, gameDate, gameDescription, solo, duration, playerResults);
     }
 
     public GameRecordBuilder withStandard5PlayersResult() {
-        withPlayerResult(aPlayerResult()
-                .withPlayerName(PLAYER_1_NAME)
-                .withPlayerScore(PLAYER_1_SCORE)
-                .withIsWinner(true).build())
+        withPlayerResult(
+                aPlayerResult()
+                        .withPlayerName(PLAYER_1_NAME)
+                        .withPlayerScore(PLAYER_1_SCORE)
+                        .withIsWinner(true).build())
                 .withPlayerResult(aPlayerResult()
                         .withPlayerName(PLAYER_2_NAME)
                         .withPlayerScore(PLAYER_2_SCORE).build())

@@ -1,4 +1,4 @@
-package pl.zajacp.test.db;
+package pl.zajacp.test.utils;
 
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;

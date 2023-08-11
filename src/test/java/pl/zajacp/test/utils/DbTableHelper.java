@@ -1,4 +1,4 @@
-package pl.zajacp.test.db;
+package pl.zajacp.test.utils;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition;

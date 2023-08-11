@@ -1,4 +1,4 @@
-package pl.zajacp.test.builder;
+package pl.zajacp.test.domain;
 
 import pl.zajacp.model.GameRecord;
 import pl.zajacp.model.GamesLog;

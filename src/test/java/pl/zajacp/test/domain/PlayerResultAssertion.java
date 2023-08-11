@@ -1,4 +1,4 @@
-package pl.zajacp.test.assertion;
+package pl.zajacp.test.domain;
 
 import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Assertions;

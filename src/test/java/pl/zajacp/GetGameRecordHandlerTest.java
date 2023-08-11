@@ -7,11 +7,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import pl.zajacp.test.FakeContext;
 import pl.zajacp.model.GameRecord;
 import pl.zajacp.repository.DynamoDbRepository;
 import pl.zajacp.shared.ObjMapper;
-import pl.zajacp.test.FakeContext;
-import pl.zajacp.test.db.DynamoDbContainer;
+import pl.zajacp.test.utils.DynamoDbContainer;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
@@ -21,13 +21,13 @@ import java.net.URI;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static pl.zajacp.test.TestData.GAME_DATE;
-import static pl.zajacp.test.TestData.GAME_DESCRIPTION;
-import static pl.zajacp.test.TestData.GAME_NAME;
-import static pl.zajacp.test.TestData.TIMESTAMP;
-import static pl.zajacp.test.assertion.GameRecordAssertion.assertThat;
-import static pl.zajacp.test.builder.GameRecordBuilder.aGameRecord;
-import static pl.zajacp.test.db.DbTableHelper.*;
+import static pl.zajacp.test.utils.TestData.GAME_DATE;
+import static pl.zajacp.test.utils.TestData.GAME_DESCRIPTION;
+import static pl.zajacp.test.utils.TestData.GAME_NAME;
+import static pl.zajacp.test.utils.TestData.TIMESTAMP;
+import static pl.zajacp.test.domain.GameRecordAssertion.assertThat;
+import static pl.zajacp.test.domain.GameRecordBuilder.aGameRecord;
+import static pl.zajacp.test.utils.DbTableHelper.*;
 
 public class GetGameRecordHandlerTest {
 
