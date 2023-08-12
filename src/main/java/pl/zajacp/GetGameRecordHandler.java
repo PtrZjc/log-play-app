@@ -17,19 +17,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static pl.zajacp.rest.GetRequestValidator.*;
-import static pl.zajacp.rest.GetRequestValidator.DataType.*;
-import static pl.zajacp.rest.GetRequestValidator.ParamType.*;
+import static pl.zajacp.repository.GameLogRepositoryCommons.GAME_NAME_HASH_KEY;
+import static pl.zajacp.repository.GameLogRepositoryCommons.TIMESTAMP_RANGE_KEY;
+import static pl.zajacp.repository.GameLogRepositoryCommons.getGameRecordKey;
+import static pl.zajacp.rest.GetRequestValidator.DataType.INTEGER;
+import static pl.zajacp.rest.GetRequestValidator.DataType.STRING;
+import static pl.zajacp.rest.GetRequestValidator.ParamType.QUERY;
+import static pl.zajacp.rest.GetRequestValidator.RequiredParam;
+import static pl.zajacp.rest.GetRequestValidator.validateParameters;
 
 @AllArgsConstructor
 public class GetGameRecordHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
-    private static final String GAME_NAME = "gameName";
-    private static final String TIMESTAMP = "timestamp";
-
     private static final List<RequiredParam> REQUIRED_PARAMS = List.of(
-            new RequiredParam(GAME_NAME, QUERY, STRING),
-            new RequiredParam(TIMESTAMP, QUERY, INTEGER)
+            new RequiredParam(GAME_NAME_HASH_KEY, QUERY, STRING),
+            new RequiredParam(TIMESTAMP_RANGE_KEY, QUERY, INTEGER)
     );
 
     private final DynamoDbRepository<GameRecord> gameItemRepository;
@@ -53,12 +55,12 @@ public class GetGameRecordHandler implements RequestHandler<APIGatewayProxyReque
             Map<String, String> queryParams = Optional.ofNullable(requestEvent.getQueryStringParameters())
                     .orElse(Collections.emptyMap());
 
-            ItemQueryKey itemQueryKey = ItemQueryKey.of(
-                    GAME_NAME, queryParams.get(GAME_NAME),
-                    TIMESTAMP, Long.valueOf(queryParams.get(TIMESTAMP))
-            );
+            ItemQueryKey itemQueryKey = getGameRecordKey(
+                    queryParams.get(GAME_NAME_HASH_KEY),
+                    Long.valueOf(queryParams.get(TIMESTAMP_RANGE_KEY)));
 
             Optional<GameRecord> item = gameItemRepository.getItem(itemQueryKey);
+
             if (item.isEmpty()) {
                 return new APIGatewayProxyResponseEvent()
                         .withBody(asErrorJson("Game record not found"))

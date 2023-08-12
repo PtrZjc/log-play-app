@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 import pl.zajacp.model.GameRecord;
 
+import java.util.Optional;
+
 import static pl.zajacp.test.utils.TestData.PLAYER_1_NAME;
 import static pl.zajacp.test.utils.TestData.PLAYER_1_SCORE;
 import static pl.zajacp.test.utils.TestData.PLAYER_2_NAME;
@@ -19,6 +21,11 @@ import static pl.zajacp.test.utils.TestData.PLAYER_5_SCORE;
 public class GameRecordAssertion {
 
     private final GameRecord gameRecord;
+
+    public static GameRecordAssertion assertThat(Optional<GameRecord> gameRecord) {
+        Assertions.assertTrue(gameRecord.isPresent());
+        return new GameRecordAssertion(gameRecord.get());
+    }
 
     public static GameRecordAssertion assertThat(GameRecord gameRecord) {
         Assertions.assertNotNull(gameRecord);

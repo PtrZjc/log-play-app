@@ -13,6 +13,7 @@ public class TestData {
     public final static String GAME_DATE = "2023-07-06";
     public final static String INVALID_GAME_DATE = "15/05/2023";
     public final static String GAME_DESCRIPTION = "description";
+    public final static String DIFFERENT_DESCRIPTION = "some other description";
     public final static String DURATION = "3:00";
     public final static String COMMENT = "comment";
     public final static String PLAYER_1_NAME = "Piotr";

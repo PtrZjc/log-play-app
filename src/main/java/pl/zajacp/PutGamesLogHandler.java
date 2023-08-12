@@ -6,7 +6,6 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import pl.zajacp.model.GameRecord;
 import pl.zajacp.model.GamesLog;
 import pl.zajacp.repository.DynamoDbRepository;
@@ -16,11 +15,16 @@ import pl.zajacp.shared.ObjMapper;
 
 import java.util.Map;
 
+import static pl.zajacp.shared.RestUtils.getValidationFailedResponseEvent;
+
 @AllArgsConstructor
-@NoArgsConstructor
 public class PutGamesLogHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
-    private DynamoDbRepository<GameRecord> gameItemRepository = GamesLogRepository.INSTANCE.get();
+    private final DynamoDbRepository<GameRecord> gameItemRepository;
+
+    public PutGamesLogHandler() {
+        this.gameItemRepository = GamesLogRepository.INSTANCE.get();
+    }
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
@@ -31,7 +35,11 @@ public class PutGamesLogHandler implements RequestHandler<APIGatewayProxyRequest
         try {
             GamesLog gamesLog = ObjMapper.INSTANCE.get().readValue(requestEvent.getBody(), GamesLog.class);
 
-            GameValidator.validateGamesLog(gamesLog);
+            var validationErrors = GameValidator.validateGamesLog(gamesLog);
+
+            if(!validationErrors.isEmpty()){
+                return getValidationFailedResponseEvent(validationErrors);
+            }
 
             String resultMessage = gamesLog.games().size() == 1
                     ? gameItemRepository.putItem(gamesLog.games().get(0))
