@@ -3,14 +3,14 @@ package pl.zajacp;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import pl.zajacp.test.FakeContext;
 import pl.zajacp.model.GameRecord;
 import pl.zajacp.repository.DynamoDbRepository;
 import pl.zajacp.shared.ObjMapper;
+import pl.zajacp.test.FakeContext;
+import pl.zajacp.test.domain.ValidationResultAssertion;
 import pl.zajacp.test.utils.DynamoDbContainer;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -20,14 +20,15 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import java.net.URI;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static pl.zajacp.test.domain.GameRecordAssertion.assertThat;
+import static pl.zajacp.test.domain.GameRecordBuilder.aGameRecord;
+import static pl.zajacp.test.utils.DbTableHelper.createTableWithCompositePrimaryKey;
+import static pl.zajacp.test.utils.DbTableHelper.deleteTable;
 import static pl.zajacp.test.utils.TestData.GAME_DATE;
 import static pl.zajacp.test.utils.TestData.GAME_DESCRIPTION;
 import static pl.zajacp.test.utils.TestData.GAME_NAME;
 import static pl.zajacp.test.utils.TestData.TIMESTAMP;
-import static pl.zajacp.test.domain.GameRecordAssertion.assertThat;
-import static pl.zajacp.test.domain.GameRecordBuilder.aGameRecord;
-import static pl.zajacp.test.utils.DbTableHelper.*;
 
 public class GetGameRecordHandlerTest {
 
@@ -102,7 +103,7 @@ public class GetGameRecordHandlerTest {
     }
 
     @Test
-    public void shouldGet400WhenQueryParamsAreMissing() throws JsonProcessingException {
+    public void shouldGet400WhenQueryParamsAreMissing() {
         //given
         var requestEvent = new APIGatewayProxyRequestEvent();
         requestEvent.withQueryStringParameters(Map.of());
@@ -113,16 +114,13 @@ public class GetGameRecordHandlerTest {
         //then
         assertEquals(400, responseEvent.getStatusCode());
 
-        var bodyMap = ObjMapper.INSTANCE.get().readValue(responseEvent.getBody(), Map.class);
-
-        Map<String, String> errors = (Map) bodyMap.get("errors");
-
-        Assertions.assertEquals(errors.get("gameName"), "Parameter is missing");
-        Assertions.assertEquals(errors.get("timestamp"), "Parameter is missing");
+        ValidationResultAssertion.assertThat(responseEvent.getBody())
+                .hasErrorOnProperty("gameName").withDetails("Parameter is missing")
+                .hasErrorOnProperty("timestamp").withDetails("Parameter is missing");
     }
 
     @Test
-    public void shouldGet400WhenTimestampHasNotOnlyNumbers() throws JsonProcessingException {
+    public void shouldGet400WhenTimestampIsNotInteger() {
         //given
         var requestEvent = new APIGatewayProxyRequestEvent();
         requestEvent.withQueryStringParameters(Map.of(
@@ -135,10 +133,7 @@ public class GetGameRecordHandlerTest {
         //then
         assertEquals(400, responseEvent.getStatusCode());
 
-        var bodyMap = ObjMapper.INSTANCE.get().readValue(responseEvent.getBody(), Map.class);
-
-        Map<String, String> errors = (Map) bodyMap.get("errors");
-
-        Assertions.assertEquals(errors.get("timestamp"), "Not a valid integer number");
+        ValidationResultAssertion.assertThat(responseEvent.getBody())
+                .hasErrorOnProperty("timestamp").withDetails("Not a valid integer number");
     }
 }
