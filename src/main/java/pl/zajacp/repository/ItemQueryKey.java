@@ -40,6 +40,6 @@ public class ItemQueryKey {
             return builder.n(attribute.toString()).build();
         }
         //add when needed
-        throw new UnsupportedOperationException("Unexpected value");
+        throw new UnsupportedOperationException("Unhandled type of query parameter: " + attribute);
     }
 }

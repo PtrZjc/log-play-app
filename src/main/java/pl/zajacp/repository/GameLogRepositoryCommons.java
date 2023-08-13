@@ -2,12 +2,17 @@ package pl.zajacp.repository;
 
 public class GameLogRepositoryCommons {
 
-    public static final String GAME_NAME_HASH_KEY = "gameName";
+    public static final String USER_HASH_KEY = "user";
     public static final String TIMESTAMP_RANGE_KEY = "timestamp";
+    public static final String GLOBAL_USER = "global";
 
-    public static ItemQueryKey getGameRecordKey(String gameName, Long timestamp) {
+    public static ItemQueryKey getGameRecordKey(Long timestamp) {
+        return getGameRecordKey(timestamp, null);
+    }
+
+    public static ItemQueryKey getGameRecordKey(Long timestamp, String user) {
         return ItemQueryKey.of(
-                GAME_NAME_HASH_KEY, gameName,
+                USER_HASH_KEY, user,
                 TIMESTAMP_RANGE_KEY, timestamp);
     }
 }

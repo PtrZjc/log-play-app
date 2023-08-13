@@ -21,7 +21,7 @@ import java.net.URI;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static pl.zajacp.repository.GameLogRepositoryCommons.GAME_NAME_HASH_KEY;
+import static pl.zajacp.repository.GameLogRepositoryCommons.USER_HASH_KEY;
 import static pl.zajacp.repository.GameLogRepositoryCommons.TIMESTAMP_RANGE_KEY;
 import static pl.zajacp.test.domain.GameRecordAssertion.assertThat;
 import static pl.zajacp.test.domain.GameRecordBuilder.aGameRecord;
@@ -54,7 +54,7 @@ public class GetGameRecordHandlerTest {
 
     @BeforeEach
     public void beforeEach() {
-        createTableWithCompositePrimaryKey(client, GAME_NAME_HASH_KEY, TIMESTAMP_RANGE_KEY, "games_log");
+        createTableWithCompositePrimaryKey(client, USER_HASH_KEY, TIMESTAMP_RANGE_KEY, "games_log");
     }
 
     @AfterEach
@@ -70,10 +70,7 @@ public class GetGameRecordHandlerTest {
                 .build());
 
         var requestEvent = new APIGatewayProxyRequestEvent();
-        requestEvent.withQueryStringParameters(Map.of(
-                GAME_NAME_HASH_KEY, GAME_NAME,
-                TIMESTAMP_RANGE_KEY, TIMESTAMP.toString()
-        ));
+        requestEvent.withQueryStringParameters(Map.of(TIMESTAMP_RANGE_KEY, TIMESTAMP.toString()));
 
         //when
         var responseEvent = getGameRecordHandler.handleRequest(requestEvent, new FakeContext());
@@ -92,10 +89,7 @@ public class GetGameRecordHandlerTest {
     public void shouldGet404WhenGameRecordDoesNotExist() {
         //given
         var requestEvent = new APIGatewayProxyRequestEvent();
-        requestEvent.withQueryStringParameters(Map.of(
-                GAME_NAME_HASH_KEY, GAME_NAME,
-                TIMESTAMP_RANGE_KEY, TIMESTAMP.toString()
-        ));
+        requestEvent.withQueryStringParameters(Map.of(TIMESTAMP_RANGE_KEY, TIMESTAMP.toString()));
 
         //when
         var responseEvent = getGameRecordHandler.handleRequest(requestEvent, new FakeContext());
@@ -105,7 +99,7 @@ public class GetGameRecordHandlerTest {
     }
 
     @Test
-    public void shouldGet400WhenQueryParamsAreMissing() {
+    public void shouldGet400WhenValidationFindsError() {
         //given
         var requestEvent = new APIGatewayProxyRequestEvent();
         requestEvent.withQueryStringParameters(Map.of());
@@ -117,25 +111,7 @@ public class GetGameRecordHandlerTest {
         assertEquals(400, responseEvent.getStatusCode());
 
         ValidationResultAssertion.assertThat(responseEvent.getBody())
-                .hasErrorOnProperty(GAME_NAME_HASH_KEY).withDetails("Parameter is missing")
-                .hasErrorOnProperty(TIMESTAMP_RANGE_KEY).withDetails("Parameter is missing");
-    }
-
-    @Test
-    public void shouldGet400WhenTimestampIsNotInteger() {
-        //given
-        var requestEvent = new APIGatewayProxyRequestEvent();
-        requestEvent.withQueryStringParameters(Map.of(
-                GAME_NAME_HASH_KEY, GAME_NAME,
-                TIMESTAMP_RANGE_KEY, "1000.00"
-        ));
-        //when
-        var responseEvent = getGameRecordHandler.handleRequest(requestEvent, new FakeContext());
-
-        //then
-        assertEquals(400, responseEvent.getStatusCode());
-
-        ValidationResultAssertion.assertThat(responseEvent.getBody())
-                .hasErrorOnProperty(TIMESTAMP_RANGE_KEY).withDetails("Not a valid integer number");
+                .hasErrorOnProperty(TIMESTAMP_RANGE_KEY)
+                .withDetails("Parameter is missing");
     }
 }

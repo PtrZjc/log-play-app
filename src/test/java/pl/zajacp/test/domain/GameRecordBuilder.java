@@ -6,6 +6,7 @@ import pl.zajacp.model.PlayerResult;
 import java.util.ArrayList;
 import java.util.List;
 
+import static pl.zajacp.repository.GameLogRepositoryCommons.GLOBAL_USER;
 import static pl.zajacp.test.domain.PlayerResultBuilder.*;
 import static pl.zajacp.test.utils.TestData.DURATION;
 import static pl.zajacp.test.utils.TestData.GAME_DATE;
@@ -38,7 +39,7 @@ public class GameRecordBuilder {
 
 
     public GameRecord build() {
-        return new GameRecord(timestamp, gameName, gameDate, gameDescription, solo, duration, playerResults);
+        return new GameRecord(GLOBAL_USER, timestamp, gameName, gameDate, gameDescription, solo, duration, playerResults);
     }
 
     public GameRecordBuilder withStandard5PlayersResult() {

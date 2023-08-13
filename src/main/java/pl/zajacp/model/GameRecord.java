@@ -1,5 +1,6 @@
 package pl.zajacp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -18,6 +19,8 @@ import java.util.List;
 @NoArgsConstructor
 @DynamoDbBean
 public class GameRecord {
+    @JsonIgnore
+    private String user;
     private Long timestamp;
     private String gameName;
     private String gameDate;

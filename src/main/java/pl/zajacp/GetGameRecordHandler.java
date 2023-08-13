@@ -4,7 +4,6 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
 import pl.zajacp.model.GameRecord;
 import pl.zajacp.repository.DynamoDbRepository;
@@ -12,25 +11,24 @@ import pl.zajacp.repository.GamesLogRepository;
 import pl.zajacp.repository.ItemQueryKey;
 import pl.zajacp.shared.ObjMapper;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static pl.zajacp.repository.GameLogRepositoryCommons.GAME_NAME_HASH_KEY;
+import static pl.zajacp.repository.GameLogRepositoryCommons.GLOBAL_USER;
 import static pl.zajacp.repository.GameLogRepositoryCommons.TIMESTAMP_RANGE_KEY;
 import static pl.zajacp.repository.GameLogRepositoryCommons.getGameRecordKey;
 import static pl.zajacp.rest.RequestParamValidator.DataType.INTEGER;
-import static pl.zajacp.rest.RequestParamValidator.DataType.STRING;
 import static pl.zajacp.rest.RequestParamValidator.ParamType.QUERY;
 import static pl.zajacp.rest.RequestParamValidator.RequiredParam;
 import static pl.zajacp.rest.RequestParamValidator.validateParameters;
+import static pl.zajacp.rest.RestCommons.getUserFromHeaders;
+import static pl.zajacp.rest.RestCommons.getValidationFailedResponseEvent;
 
 @AllArgsConstructor
 public class GetGameRecordHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
     private static final List<RequiredParam> REQUIRED_PARAMS = List.of(
-            new RequiredParam(GAME_NAME_HASH_KEY, QUERY, STRING),
             new RequiredParam(TIMESTAMP_RANGE_KEY, QUERY, INTEGER)
     );
 
@@ -53,11 +51,12 @@ public class GetGameRecordHandler implements RequestHandler<APIGatewayProxyReque
             }
 
             Map<String, String> queryParams = Optional.ofNullable(requestEvent.getQueryStringParameters())
-                    .orElse(Collections.emptyMap());
+                    .orElse(Map.of());
 
             ItemQueryKey itemQueryKey = getGameRecordKey(
-                    queryParams.get(GAME_NAME_HASH_KEY),
-                    Long.valueOf(queryParams.get(TIMESTAMP_RANGE_KEY)));
+                    Long.valueOf(queryParams.get(TIMESTAMP_RANGE_KEY)),
+                    getUserFromHeaders(requestEvent, GLOBAL_USER)
+            );
 
             Optional<GameRecord> item = gameItemRepository.getItem(itemQueryKey);
 
@@ -81,14 +80,6 @@ public class GetGameRecordHandler implements RequestHandler<APIGatewayProxyReque
         }
         responseEvent.withHeaders(Map.of("Content-Type", "application/json"));
         return responseEvent;
-    }
-
-    private APIGatewayProxyResponseEvent getValidationFailedResponseEvent(Map<String, String> validationErrors) throws JsonProcessingException {
-        APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
-        response.setStatusCode(400);
-        var jsonErrors = ObjMapper.INSTANCE.get().writeValueAsString(Map.of("errors", validationErrors));
-        response.setBody(jsonErrors);
-        return response;
     }
 
     private static String asErrorJson(String reason) {

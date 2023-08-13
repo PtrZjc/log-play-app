@@ -50,12 +50,12 @@ Resources:
     Type: AWS::DynamoDB::Table
     Properties:
       AttributeDefinitions:
-        - AttributeName: gameName
+        - AttributeName: user
           AttributeType: S
         - AttributeName: timestamp
           AttributeType: N
       KeySchema:
-        - AttributeName: gameName
+        - AttributeName: user
           KeyType: HASH
         - AttributeName: timestamp
           KeyType: RANGE

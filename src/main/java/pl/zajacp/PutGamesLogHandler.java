@@ -14,8 +14,12 @@ import pl.zajacp.rest.GameValidator;
 import pl.zajacp.shared.ObjMapper;
 
 import java.util.Map;
+import java.util.Optional;
 
-import static pl.zajacp.shared.RestUtils.getValidationFailedResponseEvent;
+import static pl.zajacp.repository.GameLogRepositoryCommons.GLOBAL_USER;
+import static pl.zajacp.rest.RestCommons.USER_HEADER;
+import static pl.zajacp.rest.RestCommons.getUserFromHeaders;
+import static pl.zajacp.rest.RestCommons.getValidationFailedResponseEvent;
 
 @AllArgsConstructor
 public class PutGamesLogHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
@@ -37,9 +41,11 @@ public class PutGamesLogHandler implements RequestHandler<APIGatewayProxyRequest
 
             var validationErrors = GameValidator.validateGamesLog(gamesLog);
 
-            if(!validationErrors.isEmpty()){
+            if (!validationErrors.isEmpty()) {
                 return getValidationFailedResponseEvent(validationErrors);
             }
+
+            enrichWithUser(requestEvent, gamesLog);
 
             if (gamesLog.games().size() == 1) {
                 gameItemRepository.putItem(gamesLog.games().get(0));
@@ -59,6 +65,11 @@ public class PutGamesLogHandler implements RequestHandler<APIGatewayProxyRequest
         }
         responseEvent.withHeaders(Map.of("Content-Type", "application/json"));
         return responseEvent;
+    }
+
+    private static void enrichWithUser(APIGatewayProxyRequestEvent requestEvent, GamesLog gamesLog) {
+        String user = getUserFromHeaders(requestEvent, GLOBAL_USER);
+        gamesLog.games().forEach(g -> g.setUser(user));
     }
 
     private static String asErrorJson(String reason) {

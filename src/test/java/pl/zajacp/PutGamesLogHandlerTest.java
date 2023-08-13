@@ -22,6 +22,9 @@ import java.net.URI;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static pl.zajacp.repository.GameLogRepositoryCommons.GLOBAL_USER;
+import static pl.zajacp.repository.GameLogRepositoryCommons.TIMESTAMP_RANGE_KEY;
+import static pl.zajacp.repository.GameLogRepositoryCommons.USER_HASH_KEY;
 import static pl.zajacp.repository.GameLogRepositoryCommons.getGameRecordKey;
 import static pl.zajacp.test.domain.GameRecordAssertion.assertThat;
 import static pl.zajacp.test.domain.GameRecordBuilder.aGameRecord;
@@ -47,8 +50,8 @@ public class PutGamesLogHandlerTest {
     public static void beforeAll() {
         DynamoDbContainer.startContainer();
         client = DynamoDbClient.builder()
-                .endpointOverride(URI.create(DynamoDbContainer.getLocalhostPath()))
-//                .endpointOverride(URI.create("http://localhost:8000"))
+//                .endpointOverride(URI.create(DynamoDbContainer.getLocalhostPath()))
+                .endpointOverride(URI.create("http://localhost:8000"))
                 .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create("local", "local")))
                 .region(Region.EU_CENTRAL_1).build();
         repository = new DynamoDbRepository<>(client, "games_log", GameRecord.class);
@@ -57,7 +60,7 @@ public class PutGamesLogHandlerTest {
 
     @BeforeEach
     public void beforeEach() {
-        createTableWithCompositePrimaryKey(client, "gameName", "timestamp", "games_log");
+        createTableWithCompositePrimaryKey(client, USER_HASH_KEY, TIMESTAMP_RANGE_KEY, "games_log");
     }
 
     @AfterEach
@@ -79,7 +82,7 @@ public class PutGamesLogHandlerTest {
         //then
         assertEquals(204, responseEvent.getStatusCode());
 
-        var savedGameRecord = repository.getItem(getGameRecordKey(GAME_NAME, TIMESTAMP));
+        var savedGameRecord = repository.getItem(getGameRecordKey(TIMESTAMP, GLOBAL_USER));
 
         assertThat(savedGameRecord)
                 .hasGameName(GAME_NAME)
@@ -107,9 +110,9 @@ public class PutGamesLogHandlerTest {
         var responseEvent = putGamesLogHandler.handleRequest(requestEvent, new FakeContext());
 
         //then
-        assertEquals(200, responseEvent.getStatusCode());
+        assertEquals(204, responseEvent.getStatusCode());
 
-        var savedGameRecord = repository.getItem(getGameRecordKey(GAME_NAME, TIMESTAMP));
+        var savedGameRecord = repository.getItem(getGameRecordKey(TIMESTAMP, GLOBAL_USER));
 
         assertThat(savedGameRecord)
                 .hasGameDescription(DIFFERENT_DESCRIPTION);
@@ -135,8 +138,8 @@ public class PutGamesLogHandlerTest {
         //then
         assertEquals(204, responseEvent.getStatusCode());
 
-        var savedGameRecord1 = repository.getItem(getGameRecordKey(GAME_NAME, TIMESTAMP));
-        var savedGameRecord2 = repository.getItem(getGameRecordKey(GAME_NAME, TIMESTAMP_2));
+        var savedGameRecord1 = repository.getItem(getGameRecordKey(TIMESTAMP, GLOBAL_USER));
+        var savedGameRecord2 = repository.getItem(getGameRecordKey(TIMESTAMP_2, GLOBAL_USER));
 
         assertThat(savedGameRecord1).hasTimestamp(TIMESTAMP);
         assertThat(savedGameRecord2).hasTimestamp(TIMESTAMP_2);
