@@ -5,6 +5,9 @@ import pl.zajacp.model.GamesLog;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
+
+import static pl.zajacp.test.domain.GameRecordBuilder.*;
 
 public class GamesLogBuilder {
     private List<GameRecord> gamesLog = new ArrayList<>();
@@ -13,12 +16,21 @@ public class GamesLogBuilder {
         return new GamesLogBuilder();
     }
 
-    public GamesLog build(){
+    public GamesLog build() {
         return new GamesLog(gamesLog);
     }
 
     public GamesLogBuilder withGameRecord(GameRecord gameRecord) {
         gamesLog.add(gameRecord);
+        return this;
+    }
+
+    public GamesLogBuilder withMultipleDefaultGameRecordsStartingWithTimestamp(Long timestamp, Integer quantity) {
+        IntStream.range(0, quantity)
+                .mapToObj(i -> aGameRecord()
+                        .withStandard5PlayersResult()
+                        .withTimestamp(timestamp + i).build())
+                .forEach(gr -> gamesLog.add(gr));
         return this;
     }
 }

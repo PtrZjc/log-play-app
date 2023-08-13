@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public class RestCommons {
 
-    public static final String USER_HEADER = "user";
+    public static final String USER_HEADER = "userName";
 
     public static APIGatewayProxyResponseEvent getValidationFailedResponseEvent(Map<String, String> validationErrors) throws JsonProcessingException {
         APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
@@ -20,7 +20,7 @@ public class RestCommons {
         return response;
     }
 
-    public static String getUserFromHeaders(APIGatewayProxyRequestEvent requestEvent, String fallbackUser) {
+    public static String getUserFromHeader(APIGatewayProxyRequestEvent requestEvent, String fallbackUser) {
         var headers = Optional.ofNullable(requestEvent.getHeaders()).orElse(Map.of());
         var userFromHeader = headers.get(USER_HEADER);
         return userFromHeader != null ? userFromHeader : fallbackUser;

@@ -2,7 +2,7 @@ package pl.zajacp.repository;
 
 public class GameLogRepositoryCommons {
 
-    public static final String USER_HASH_KEY = "user";
+    public static final String USER_HASH_KEY = "userName";
     public static final String TIMESTAMP_RANGE_KEY = "timestamp";
     public static final String GLOBAL_USER = "global";
 

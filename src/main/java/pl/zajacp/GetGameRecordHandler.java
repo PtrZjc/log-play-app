@@ -22,7 +22,7 @@ import static pl.zajacp.rest.RequestParamValidator.DataType.INTEGER;
 import static pl.zajacp.rest.RequestParamValidator.ParamType.QUERY;
 import static pl.zajacp.rest.RequestParamValidator.RequiredParam;
 import static pl.zajacp.rest.RequestParamValidator.validateParameters;
-import static pl.zajacp.rest.RestCommons.getUserFromHeaders;
+import static pl.zajacp.rest.RestCommons.getUserFromHeader;
 import static pl.zajacp.rest.RestCommons.getValidationFailedResponseEvent;
 
 @AllArgsConstructor
@@ -55,7 +55,7 @@ public class GetGameRecordHandler implements RequestHandler<APIGatewayProxyReque
 
             ItemQueryKey itemQueryKey = getGameRecordKey(
                     Long.valueOf(queryParams.get(TIMESTAMP_RANGE_KEY)),
-                    getUserFromHeaders(requestEvent, GLOBAL_USER)
+                    getUserFromHeader(requestEvent, GLOBAL_USER)
             );
 
             Optional<GameRecord> item = gameItemRepository.getItem(itemQueryKey);

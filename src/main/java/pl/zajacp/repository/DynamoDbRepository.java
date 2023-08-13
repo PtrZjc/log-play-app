@@ -4,23 +4,23 @@ import org.apache.commons.collections4.ListUtils;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
-import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition;
 import software.amazon.awssdk.services.dynamodb.model.BatchWriteItemRequest;
-import software.amazon.awssdk.services.dynamodb.model.CreateTableRequest;
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
-import software.amazon.awssdk.services.dynamodb.model.KeySchemaElement;
-import software.amazon.awssdk.services.dynamodb.model.KeyType;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.PutRequest;
+import software.amazon.awssdk.services.dynamodb.model.QueryRequest;
 import software.amazon.awssdk.services.dynamodb.model.WriteRequest;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class DynamoDbRepository<T> {
+
+    public enum QueryOrder {
+        ASC, DESC;
+    }
 
     //https://github.com/aws/aws-sdk-java-v2/issues/2265 <- storing nested objects in dynamodb
     private final DynamoDbClient client;
@@ -49,6 +49,19 @@ public class DynamoDbRepository<T> {
 
         var itemAsMap = client.getItem(getRequest).item();
         return Optional.ofNullable(tableSchema.mapToItem(itemAsMap));
+    }
+
+        public List<T> getItems(ItemQueryKey itemQueryKey, QueryOrder order) {
+        QueryRequest query = QueryRequest.builder()
+                .tableName(tableName)
+                .scanIndexForward(order == QueryOrder.DESC)
+                .keyConditionExpression(itemQueryKey.toKeyConditionExpression())
+                .expressionAttributeValues(itemQueryKey.toExpressionAttributeValue())
+                .build();
+
+        return client.query(query).items().stream()
+                .map(tableSchema::mapToItem)
+                .collect(Collectors.toList());
     }
 
     public void putItem(T item) {

@@ -4,12 +4,14 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pl.zajacp.model.GameRecord;
 import pl.zajacp.model.GamesLog;
 import pl.zajacp.repository.DynamoDbRepository;
+import pl.zajacp.repository.ItemQueryKey;
 import pl.zajacp.shared.ObjMapper;
 import pl.zajacp.test.FakeContext;
 import pl.zajacp.test.utils.DynamoDbContainer;
@@ -22,6 +24,7 @@ import java.net.URI;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static pl.zajacp.repository.DynamoDbRepository.QueryOrder.ASC;
 import static pl.zajacp.repository.GameLogRepositoryCommons.GLOBAL_USER;
 import static pl.zajacp.repository.GameLogRepositoryCommons.TIMESTAMP_RANGE_KEY;
 import static pl.zajacp.repository.GameLogRepositoryCommons.USER_HASH_KEY;
@@ -36,7 +39,6 @@ import static pl.zajacp.test.utils.TestData.GAME_DATE;
 import static pl.zajacp.test.utils.TestData.GAME_DESCRIPTION;
 import static pl.zajacp.test.utils.TestData.GAME_NAME;
 import static pl.zajacp.test.utils.TestData.TIMESTAMP;
-import static pl.zajacp.test.utils.TestData.TIMESTAMP_2;
 
 public class PutGamesLogHandlerTest {
 
@@ -50,8 +52,8 @@ public class PutGamesLogHandlerTest {
     public static void beforeAll() {
         DynamoDbContainer.startContainer();
         client = DynamoDbClient.builder()
-//                .endpointOverride(URI.create(DynamoDbContainer.getLocalhostPath()))
-                .endpointOverride(URI.create("http://localhost:8000"))
+                .endpointOverride(URI.create(DynamoDbContainer.getLocalhostPath()))
+//                .endpointOverride(URI.create("http://localhost:8000"))
                 .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create("local", "local")))
                 .region(Region.EU_CENTRAL_1).build();
         repository = new DynamoDbRepository<>(client, "games_log", GameRecord.class);
@@ -123,12 +125,7 @@ public class PutGamesLogHandlerTest {
         //given
         repository.putItem(aGameRecord().withStandard5PlayersResult().build());
 
-        GamesLog gamesLog = aGamesLog()
-                .withGameRecord(aGameRecord().withStandard5PlayersResult().build())
-                .withGameRecord(aGameRecord()
-                        .withTimestamp(TIMESTAMP_2)
-                        .withStandard5PlayersResult().build()
-                ).build();
+        GamesLog gamesLog = aGamesLog().withMultipleDefaultGameRecordsStartingWithTimestamp(TIMESTAMP, 30).build();
 
         var requestEvent = new APIGatewayProxyRequestEvent().withBody(MAPPER.writeValueAsString(gamesLog));
 
@@ -138,11 +135,9 @@ public class PutGamesLogHandlerTest {
         //then
         assertEquals(204, responseEvent.getStatusCode());
 
-        var savedGameRecord1 = repository.getItem(getGameRecordKey(TIMESTAMP, GLOBAL_USER));
-        var savedGameRecord2 = repository.getItem(getGameRecordKey(TIMESTAMP_2, GLOBAL_USER));
+        var savedGameRecords = repository.getItems(ItemQueryKey.of(USER_HASH_KEY, GLOBAL_USER), ASC);
 
-        assertThat(savedGameRecord1).hasTimestamp(TIMESTAMP);
-        assertThat(savedGameRecord2).hasTimestamp(TIMESTAMP_2);
+        Assertions.assertEquals(30, savedGameRecords.size());
     }
 
     @Test
