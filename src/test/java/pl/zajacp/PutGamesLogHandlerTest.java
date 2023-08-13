@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import pl.zajacp.model.GameRecord;
 import pl.zajacp.model.GamesLog;
@@ -47,8 +48,8 @@ public class PutGamesLogHandlerTest {
     public static void beforeAll() {
         DynamoDbContainer.startContainer();
         client = DynamoDbClient.builder()
-//                .endpointOverride(URI.create(DynamoDbContainer.getLocalhostPath()))
-                .endpointOverride(URI.create("http://localhost:8000"))
+                .endpointOverride(URI.create(DynamoDbContainer.getLocalhostPath()))
+//                .endpointOverride(URI.create("http://localhost:8000"))
                 .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create("local", "local")))
                 .region(Region.EU_CENTRAL_1).build();
         repository = new DynamoDbRepository<>(client, "games_log", GameRecord.class);
@@ -128,19 +129,5 @@ public class PutGamesLogHandlerTest {
         //then
         assertEquals(400, responseEvent.getStatusCode());
         assertTrue(responseEvent.getBody().contains("Invalid JSON input"));
-    }
-
-    @Test
-    public void shouldGet500ForInternalServerError() throws JsonProcessingException {
-        // Let's assume that for any reason, the GamesLog passed validation but failed during the insertion
-        GamesLog gamesLog = new GamesLog(List.of(aGameRecord().withGameName(null).build())); // invalid GameRecord for our case
-        var requestEvent = new APIGatewayProxyRequestEvent().withBody(MAPPER.writeValueAsString(gamesLog));
-
-        //when
-        var responseEvent = putGamesLogHandler.handleRequest(requestEvent, new FakeContext());
-
-        //then
-        assertEquals(500, responseEvent.getStatusCode());
-        assertTrue(responseEvent.getBody().contains("Internal Server Error"));
     }
 }

@@ -8,7 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class GetRequestValidator {
+public class RequestParamValidator {
+
+    public static String PARAMETER_MISSING = "Parameter is missing";
+    public static String INVALID_INTEGER = "Not a valid integer number";
 
     public static Map<String, String> validateParameters(APIGatewayProxyRequestEvent event, List<RequiredParam> requiredParams)  {
         Map<String, String> errors = new HashMap<>();
@@ -24,9 +27,9 @@ public class GetRequestValidator {
             };
 
             if (actualValue == null) {
-                errors.put(param.name, "Parameter is missing");
+                errors.put(param.name, PARAMETER_MISSING);
             } else if (param.dataType == DataType.INTEGER && !actualValue.matches("\\d+")) {
-                errors.put(param.name, "Not a valid integer number");
+                errors.put(param.name, INVALID_INTEGER);
             }
         }
         return errors;

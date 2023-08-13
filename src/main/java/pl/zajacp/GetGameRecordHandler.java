@@ -20,11 +20,11 @@ import java.util.Optional;
 import static pl.zajacp.repository.GameLogRepositoryCommons.GAME_NAME_HASH_KEY;
 import static pl.zajacp.repository.GameLogRepositoryCommons.TIMESTAMP_RANGE_KEY;
 import static pl.zajacp.repository.GameLogRepositoryCommons.getGameRecordKey;
-import static pl.zajacp.rest.GetRequestValidator.DataType.INTEGER;
-import static pl.zajacp.rest.GetRequestValidator.DataType.STRING;
-import static pl.zajacp.rest.GetRequestValidator.ParamType.QUERY;
-import static pl.zajacp.rest.GetRequestValidator.RequiredParam;
-import static pl.zajacp.rest.GetRequestValidator.validateParameters;
+import static pl.zajacp.rest.RequestParamValidator.DataType.INTEGER;
+import static pl.zajacp.rest.RequestParamValidator.DataType.STRING;
+import static pl.zajacp.rest.RequestParamValidator.ParamType.QUERY;
+import static pl.zajacp.rest.RequestParamValidator.RequiredParam;
+import static pl.zajacp.rest.RequestParamValidator.validateParameters;
 
 @AllArgsConstructor
 public class GetGameRecordHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {

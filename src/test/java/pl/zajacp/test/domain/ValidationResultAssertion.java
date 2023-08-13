@@ -33,6 +33,12 @@ public class ValidationResultAssertion {
         return new ValidationResultAssertion(validationErrors);
     }
 
+    public ValidationResultAssertion hasErrorQuantityOf(int errorQuantity) {
+        Assertions.assertEquals(errorQuantity , validationErrors.size(),
+                () -> String.format("Expected %s errors, but was %s instead: %s", errorQuantity, validationErrors.size(), validationErrors));
+        return this;
+    }
+
     public ValidationResultAssertion hasErrorOnProperty(String property) {
         Assertions.assertTrue(validationErrors.containsKey(property),
                 () -> String.format("Validation result does not contain error of expected property \"%s\"", property));
