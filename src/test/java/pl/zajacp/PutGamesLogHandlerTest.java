@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import pl.zajacp.model.GameRecord;
 import pl.zajacp.model.GamesLog;
@@ -20,7 +19,6 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 import java.net.URI;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -35,6 +33,7 @@ import static pl.zajacp.test.utils.TestData.GAME_DATE;
 import static pl.zajacp.test.utils.TestData.GAME_DESCRIPTION;
 import static pl.zajacp.test.utils.TestData.GAME_NAME;
 import static pl.zajacp.test.utils.TestData.TIMESTAMP;
+import static pl.zajacp.test.utils.TestData.TIMESTAMP_2;
 
 public class PutGamesLogHandlerTest {
 
@@ -78,7 +77,7 @@ public class PutGamesLogHandlerTest {
         var responseEvent = putGamesLogHandler.handleRequest(requestEvent, new FakeContext());
 
         //then
-        assertEquals(200, responseEvent.getStatusCode());
+        assertEquals(204, responseEvent.getStatusCode());
 
         var savedGameRecord = repository.getItem(getGameRecordKey(GAME_NAME, TIMESTAMP));
 
@@ -116,6 +115,32 @@ public class PutGamesLogHandlerTest {
                 .hasGameDescription(DIFFERENT_DESCRIPTION);
     }
 
+    @Test
+    public void shouldPutMultipleGames() throws JsonProcessingException {
+        //given
+        repository.putItem(aGameRecord().withStandard5PlayersResult().build());
+
+        GamesLog gamesLog = aGamesLog()
+                .withGameRecord(aGameRecord().withStandard5PlayersResult().build())
+                .withGameRecord(aGameRecord()
+                        .withTimestamp(TIMESTAMP_2)
+                        .withStandard5PlayersResult().build()
+                ).build();
+
+        var requestEvent = new APIGatewayProxyRequestEvent().withBody(MAPPER.writeValueAsString(gamesLog));
+
+        //when
+        var responseEvent = putGamesLogHandler.handleRequest(requestEvent, new FakeContext());
+
+        //then
+        assertEquals(204, responseEvent.getStatusCode());
+
+        var savedGameRecord1 = repository.getItem(getGameRecordKey(GAME_NAME, TIMESTAMP));
+        var savedGameRecord2 = repository.getItem(getGameRecordKey(GAME_NAME, TIMESTAMP_2));
+
+        assertThat(savedGameRecord1).hasTimestamp(TIMESTAMP);
+        assertThat(savedGameRecord2).hasTimestamp(TIMESTAMP_2);
+    }
 
     @Test
     public void shouldGet400ForInvalidJsonInput() {

@@ -41,14 +41,13 @@ public class PutGamesLogHandler implements RequestHandler<APIGatewayProxyRequest
                 return getValidationFailedResponseEvent(validationErrors);
             }
 
-            String resultMessage = gamesLog.games().size() == 1
-                    ? gameItemRepository.putItem(gamesLog.games().get(0))
-                    : gameItemRepository.batchPutItems(gamesLog.games());
+            if (gamesLog.games().size() == 1) {
+                gameItemRepository.putItem(gamesLog.games().get(0));
+            } else {
+                gameItemRepository.batchPutItems(gamesLog.games());
+            }
 
-            responseEvent
-                    .withStatusCode(200)
-                    .withBody(resultMessage);
-
+            responseEvent.withStatusCode(204);
         } catch (JsonProcessingException e) {
             responseEvent
                     .withStatusCode(400)

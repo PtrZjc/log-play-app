@@ -16,6 +16,7 @@ import software.amazon.awssdk.services.dynamodb.model.WriteRequest;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -50,20 +51,19 @@ public class DynamoDbRepository<T> {
         return Optional.ofNullable(tableSchema.mapToItem(itemAsMap));
     }
 
-    public String putItem(T gameRecord) {
-        var map = tableSchema.itemToMap(gameRecord, true);
-        var put = PutItemRequest.builder().tableName(tableName).item(map).build();
-        return client.putItem(put).toString();
+    public void putItem(T item) {
+        var itemToPut = PutItemRequest.builder()
+                .tableName(tableName)
+                .item(tableSchema.itemToMap(item, true))
+                .build();
+        client.putItem(itemToPut);
     }
 
-    public String batchPutItems(List<T> items) {
-        var batchWriteResponses = ListUtils.partition(items, 25)
+    public void batchPutItems(List<T> items) {
+        ListUtils.partition(items, 25)
                 .stream()
                 .map(this::mapToBatchWriteRequest)
-                .map(client::batchWriteItem)
-                .toList();
-
-        return batchWriteResponses.toString();
+                .forEach(client::batchWriteItem);
     }
 
     private BatchWriteItemRequest mapToBatchWriteRequest(List<T> recordBatch) {
@@ -74,7 +74,7 @@ public class DynamoDbRepository<T> {
                 .toList();
 
         return BatchWriteItemRequest.builder()
-                .requestItems(Collections.singletonMap(tableName, putRequests))
+                .requestItems(Map.of(tableName, putRequests))
                 .build();
     }
 }
