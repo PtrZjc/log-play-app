@@ -2,7 +2,7 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: 'AWS::Serverless-2016-10-31'
 
 Resources:
-  getGameRecord:
+  GetGameRecord:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ./target/log-play-app.jar
@@ -23,8 +23,28 @@ Resources:
           Properties:
             Path: /games
             Method: GET
-
-  putGamesLog:
+  GetGamesLog:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./target/log-play-app.jar
+      Handler: pl.zajacp.GetGamesLogHandler
+      Runtime: java17
+      MemorySize: 512
+      Timeout: 10
+      Description: Get all games
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref GamesLogTable
+      Environment:
+        Variables:
+          GAMES_LOG_TABLE: !Ref GamesLogTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /games/log
+            Method: GET
+  PutGamesLog:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ./target/log-play-app.jar
@@ -32,7 +52,7 @@ Resources:
       Runtime: java17
       MemorySize: 512
       Timeout: 10
-      Description: Patch one or more games
+      Description: Put multiple games
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref GamesLogTable
@@ -45,7 +65,6 @@ Resources:
           Properties:
             Path: /games/log
             Method: POST
-
   GamesLogTable:
     Type: AWS::DynamoDB::Table
     Properties:

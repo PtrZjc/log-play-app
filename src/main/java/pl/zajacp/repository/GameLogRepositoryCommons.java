@@ -15,4 +15,8 @@ public class GameLogRepositoryCommons {
                 USER_HASH_KEY, user,
                 TIMESTAMP_RANGE_KEY, timestamp);
     }
+
+    public static ItemQueryKey getGamesLogKey(String user) {
+        return ItemQueryKey.of(USER_HASH_KEY, user);
+    }
 }

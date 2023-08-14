@@ -13,9 +13,9 @@ import pl.zajacp.repository.GamesLogRepository;
 import pl.zajacp.rest.GameValidator;
 import pl.zajacp.shared.ObjMapper;
 
-import java.util.Map;
-
 import static pl.zajacp.repository.GameLogRepositoryCommons.GLOBAL_USER;
+import static pl.zajacp.rest.RestCommons.asErrorJson;
+import static pl.zajacp.rest.RestCommons.getResponseEvent;
 import static pl.zajacp.rest.RestCommons.getUserFromHeader;
 import static pl.zajacp.rest.RestCommons.getValidationFailedResponseEvent;
 
@@ -32,8 +32,7 @@ public class PutGamesLogHandler implements RequestHandler<APIGatewayProxyRequest
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
         context.getLogger().log("Received request: " + requestEvent);
 
-        var responseEvent = new APIGatewayProxyResponseEvent();
-
+        var responseEvent = getResponseEvent();
         try {
             GamesLog gamesLog = ObjMapper.INSTANCE.get().readValue(requestEvent.getBody(), GamesLog.class);
 
@@ -61,16 +60,11 @@ public class PutGamesLogHandler implements RequestHandler<APIGatewayProxyRequest
                     .withStatusCode(500)
                     .withBody(asErrorJson("Internal Server Error"));
         }
-        responseEvent.withHeaders(Map.of("Content-Type", "application/json"));
         return responseEvent;
     }
 
     private static void enrichWithUser(APIGatewayProxyRequestEvent requestEvent, GamesLog gamesLog) {
         String user = getUserFromHeader(requestEvent, GLOBAL_USER);
         gamesLog.games().forEach(g -> g.setUserName(user));
-    }
-
-    private static String asErrorJson(String reason) {
-        return "{\"error\": \"" + reason + "\"}";
     }
 }

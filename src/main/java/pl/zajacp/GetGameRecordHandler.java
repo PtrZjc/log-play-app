@@ -22,6 +22,8 @@ import static pl.zajacp.rest.RequestParamValidator.DataType.INTEGER;
 import static pl.zajacp.rest.RequestParamValidator.ParamType.QUERY;
 import static pl.zajacp.rest.RequestParamValidator.RequiredParam;
 import static pl.zajacp.rest.RequestParamValidator.validateParameters;
+import static pl.zajacp.rest.RestCommons.asErrorJson;
+import static pl.zajacp.rest.RestCommons.getResponseEvent;
 import static pl.zajacp.rest.RestCommons.getUserFromHeader;
 import static pl.zajacp.rest.RestCommons.getValidationFailedResponseEvent;
 
@@ -42,7 +44,7 @@ public class GetGameRecordHandler implements RequestHandler<APIGatewayProxyReque
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
         context.getLogger().log("Received request: " + requestEvent);
 
-        var responseEvent = new APIGatewayProxyResponseEvent();
+        var responseEvent = getResponseEvent();
         try {
             Map<String, String> validationErrors = validateParameters(requestEvent, REQUIRED_PARAMS);
 
@@ -65,7 +67,6 @@ public class GetGameRecordHandler implements RequestHandler<APIGatewayProxyReque
                         .withBody(asErrorJson("Game record not found"))
                         .withStatusCode(404);
             }
-
             String gameJson = ObjMapper.INSTANCE.get().writeValueAsString(item.get());
 
             responseEvent
@@ -78,12 +79,6 @@ public class GetGameRecordHandler implements RequestHandler<APIGatewayProxyReque
                     .withBody(asErrorJson("Internal server error"))
                     .withStatusCode(500);
         }
-        responseEvent.withHeaders(Map.of("Content-Type", "application/json"));
         return responseEvent;
     }
-
-    private static String asErrorJson(String reason) {
-        return "{\"error\": \"" + reason + "\"}";
-    }
 }
-
