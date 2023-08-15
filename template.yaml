@@ -44,6 +44,27 @@ Resources:
           Properties:
             Path: /games/log
             Method: GET
+  PutGameRecord:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./target/log-play-app.jar
+      Handler: pl.zajacp.PutGameRecordHandler
+      Runtime: java17
+      MemorySize: 512
+      Timeout: 10
+      Description: Put single games
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref GamesLogTable
+      Environment:
+        Variables:
+          GAMES_LOG_TABLE: !Ref GamesLogTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /games
+            Method: PUT
   PutGamesLog:
     Type: AWS::Serverless::Function
     Properties:
@@ -64,7 +85,7 @@ Resources:
           Type: Api
           Properties:
             Path: /games/log
-            Method: POST
+            Method: PUT
   GamesLogTable:
     Type: AWS::DynamoDB::Table
     Properties:

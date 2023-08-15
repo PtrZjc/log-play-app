@@ -4,14 +4,11 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pl.zajacp.model.GameRecord;
-import pl.zajacp.model.GamesLog;
 import pl.zajacp.repository.DynamoDbRepository;
-import pl.zajacp.repository.ItemQueryKey;
 import pl.zajacp.shared.ObjMapper;
 import pl.zajacp.test.FakeContext;
 import pl.zajacp.test.utils.DynamoDbContainer;
@@ -24,7 +21,6 @@ import java.net.URI;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static pl.zajacp.repository.DynamoDbRepository.QueryOrder.ASC;
 import static pl.zajacp.repository.GameLogRepositoryCommons.GLOBAL_USER;
 import static pl.zajacp.repository.GameLogRepositoryCommons.TIMESTAMP_RANGE_KEY;
 import static pl.zajacp.repository.GameLogRepositoryCommons.USER_HASH_KEY;
@@ -32,7 +28,6 @@ import static pl.zajacp.repository.GameLogRepositoryCommons.getGameRecordKey;
 import static pl.zajacp.rest.RestCommons.UNSUPPORTED_JSON_ERROR_MESSAGE;
 import static pl.zajacp.test.domain.GameRecordAssertion.assertThat;
 import static pl.zajacp.test.domain.GameRecordBuilder.aGameRecord;
-import static pl.zajacp.test.domain.GamesLogBuilder.aGamesLog;
 import static pl.zajacp.test.utils.DbTableHelper.createTableWithCompositePrimaryKey;
 import static pl.zajacp.test.utils.DbTableHelper.deleteTable;
 import static pl.zajacp.test.utils.TestData.DIFFERENT_DESCRIPTION;
@@ -41,10 +36,10 @@ import static pl.zajacp.test.utils.TestData.GAME_DESCRIPTION;
 import static pl.zajacp.test.utils.TestData.GAME_NAME;
 import static pl.zajacp.test.utils.TestData.TIMESTAMP;
 
-public class PutGamesLogHandlerTest {
+public class PutGameRecordTest {
 
     private static DynamoDbClient client;
-    private static PutGamesLogHandler putGamesLogHandler;
+    private static PutGameRecordHandler putGameRecordHandler;
     private static DynamoDbRepository<GameRecord> repository;
 
     private static final ObjectMapper MAPPER = ObjMapper.INSTANCE.get();
@@ -58,7 +53,7 @@ public class PutGamesLogHandlerTest {
                 .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create("local", "local")))
                 .region(Region.EU_CENTRAL_1).build();
         repository = new DynamoDbRepository<>(client, "games_log", GameRecord.class);
-        putGamesLogHandler = new PutGamesLogHandler(repository);
+        putGameRecordHandler = new PutGameRecordHandler(repository);
     }
 
     @BeforeEach
@@ -74,13 +69,11 @@ public class PutGamesLogHandlerTest {
     @Test
     public void shouldPutOneGameInEmptyDatabase() throws JsonProcessingException {
         //given
-        GamesLog gamesLog = aGamesLog().withGameRecord(
-                aGameRecord().withStandard5PlayersResult().build()).build();
-
-        var requestEvent = new APIGatewayProxyRequestEvent().withBody(MAPPER.writeValueAsString(gamesLog));
+        GameRecord gameRecord = aGameRecord().withStandard5PlayersResult().build();
+        var requestEvent = new APIGatewayProxyRequestEvent().withBody(MAPPER.writeValueAsString(gameRecord));
 
         //when
-        var responseEvent = putGamesLogHandler.handleRequest(requestEvent, new FakeContext());
+        var responseEvent = putGameRecordHandler.handleRequest(requestEvent, new FakeContext());
 
         //then
         assertEquals(204, responseEvent.getStatusCode());
@@ -102,15 +95,14 @@ public class PutGamesLogHandlerTest {
         //given
         repository.putItem(aGameRecord().withStandard5PlayersResult().build());
 
-        GamesLog gamesLog = aGamesLog().withGameRecord(
-                aGameRecord().withStandard5PlayersResult()
+        GameRecord gameRecord = aGameRecord().withStandard5PlayersResult()
                         .withGameDescription(DIFFERENT_DESCRIPTION)
-                        .build()).build();
+                        .build();
 
-        var requestEvent = new APIGatewayProxyRequestEvent().withBody(MAPPER.writeValueAsString(gamesLog));
+        var requestEvent = new APIGatewayProxyRequestEvent().withBody(MAPPER.writeValueAsString(gameRecord));
 
         //when
-        var responseEvent = putGamesLogHandler.handleRequest(requestEvent, new FakeContext());
+        var responseEvent = putGameRecordHandler.handleRequest(requestEvent, new FakeContext());
 
         //then
         assertEquals(204, responseEvent.getStatusCode());
@@ -122,33 +114,13 @@ public class PutGamesLogHandlerTest {
     }
 
     @Test
-    public void shouldPutMultipleGames() throws JsonProcessingException {
-        //given
-        repository.putItem(aGameRecord().withStandard5PlayersResult().build());
-
-        GamesLog gamesLog = aGamesLog().withMultipleDefaultGameRecordsStartingWithTimestamp(TIMESTAMP, 30).build();
-
-        var requestEvent = new APIGatewayProxyRequestEvent().withBody(MAPPER.writeValueAsString(gamesLog));
-
-        //when
-        var responseEvent = putGamesLogHandler.handleRequest(requestEvent, new FakeContext());
-
-        //then
-        assertEquals(204, responseEvent.getStatusCode());
-
-        var savedGameRecords = repository.getItems(ItemQueryKey.of(USER_HASH_KEY, GLOBAL_USER), ASC);
-
-        Assertions.assertEquals(30, savedGameRecords.size());
-    }
-
-    @Test
     public void shouldGet400ForInvalidJsonInput() {
         //given
         String invalidJson = "{\"games\": invalid-json-here }";
         var requestEvent = new APIGatewayProxyRequestEvent().withBody(invalidJson);
 
         //when
-        var responseEvent = putGamesLogHandler.handleRequest(requestEvent, new FakeContext());
+        var responseEvent = putGameRecordHandler.handleRequest(requestEvent, new FakeContext());
 
         //then
         assertEquals(400, responseEvent.getStatusCode());

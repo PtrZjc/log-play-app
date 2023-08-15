@@ -16,7 +16,7 @@ paths:
         '200':
           description: OK
     get:
-      summary: Get all game logs
+      summary: Get log of all games
       responses:
         '200':
           description: OK
@@ -48,6 +48,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GameLog'
+    put:
+      summary: Put a single game record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GameRecord'
+      responses:
+        '200':
+          description: OK
 components:
   schemas:
     GameLog:

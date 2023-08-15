@@ -22,6 +22,7 @@ import static pl.zajacp.rest.RequestParamValidator.DataType.INTEGER;
 import static pl.zajacp.rest.RequestParamValidator.ParamType.QUERY;
 import static pl.zajacp.rest.RequestParamValidator.RequiredParam;
 import static pl.zajacp.rest.RequestParamValidator.validateParameters;
+import static pl.zajacp.rest.RestCommons.SERVER_ERROR_MESSAGE;
 import static pl.zajacp.rest.RestCommons.asErrorJson;
 import static pl.zajacp.rest.RestCommons.getResponseEvent;
 import static pl.zajacp.rest.RestCommons.getUserFromHeader;
@@ -29,6 +30,8 @@ import static pl.zajacp.rest.RestCommons.getValidationFailedResponseEvent;
 
 @AllArgsConstructor
 public class GetGameRecordHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+
+    private final static String NOT_FOUND_MESSAGE = "Game record not found";
 
     private static final List<RequiredParam> REQUIRED_PARAMS = List.of(
             new RequiredParam(TIMESTAMP_RANGE_KEY, QUERY, INTEGER)
@@ -62,22 +65,20 @@ public class GetGameRecordHandler implements RequestHandler<APIGatewayProxyReque
 
             Optional<GameRecord> item = gameItemRepository.getItem(itemQueryKey);
 
-            if (item.isEmpty()) {
-                return new APIGatewayProxyResponseEvent()
-                        .withBody(asErrorJson("Game record not found"))
+            if (item.isPresent()) {
+                String gameJson = ObjMapper.INSTANCE.get().writeValueAsString(item.get());
+                responseEvent
+                        .withBody(gameJson)
+                        .withStatusCode(200);
+            } else {
+                responseEvent
+                        .withBody(asErrorJson(NOT_FOUND_MESSAGE))
                         .withStatusCode(404);
             }
-            String gameJson = ObjMapper.INSTANCE.get().writeValueAsString(item.get());
-
-            responseEvent
-                    .withBody(gameJson)
-                    .withStatusCode(200);
-
         } catch (Exception e) {
-            context.getLogger().log("Error processing request: " + e.getMessage());
             responseEvent
-                    .withBody(asErrorJson("Internal server error"))
-                    .withStatusCode(500);
+                    .withStatusCode(500)
+                    .withBody(asErrorJson(SERVER_ERROR_MESSAGE, e));
         }
         return responseEvent;
     }

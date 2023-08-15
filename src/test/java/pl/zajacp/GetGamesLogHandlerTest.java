@@ -5,17 +5,14 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pl.zajacp.model.GameRecord;
 import pl.zajacp.model.GamesLog;
 import pl.zajacp.repository.DynamoDbRepository;
-import pl.zajacp.repository.ItemQueryKey;
 import pl.zajacp.shared.ObjMapper;
 import pl.zajacp.test.FakeContext;
-import pl.zajacp.test.domain.ValidationResultAssertion;
 import pl.zajacp.test.utils.DynamoDbContainer;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -24,22 +21,15 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static pl.zajacp.repository.DynamoDbRepository.QueryOrder.ASC;
-import static pl.zajacp.repository.GameLogRepositoryCommons.GLOBAL_USER;
 import static pl.zajacp.repository.GameLogRepositoryCommons.TIMESTAMP_RANGE_KEY;
 import static pl.zajacp.repository.GameLogRepositoryCommons.USER_HASH_KEY;
 import static pl.zajacp.test.domain.GameRecordAssertion.assertThat;
-import static pl.zajacp.test.domain.GameRecordBuilder.aGameRecord;
 import static pl.zajacp.test.domain.GamesLogBuilder.aGamesLog;
 import static pl.zajacp.test.utils.DbTableHelper.createTableWithCompositePrimaryKey;
 import static pl.zajacp.test.utils.DbTableHelper.deleteTable;
-import static pl.zajacp.test.utils.TestData.GAME_DATE;
-import static pl.zajacp.test.utils.TestData.GAME_DESCRIPTION;
-import static pl.zajacp.test.utils.TestData.GAME_NAME;
 import static pl.zajacp.test.utils.TestData.TIMESTAMP;
 
 public class GetGamesLogHandlerTest {
@@ -79,7 +69,7 @@ public class GetGamesLogHandlerTest {
 
         //then
         assertEquals(200, responseEvent.getStatusCode());
-        assertTrue(getGamesLog(responseEvent).games().isEmpty());
+        assertTrue(readGamesLogFromBody(responseEvent).games().isEmpty());
     }
 
     @Test
@@ -94,10 +84,10 @@ public class GetGamesLogHandlerTest {
 
         //then
         assertEquals(200, responseEvent.getStatusCode());
-        assertEquals(30, getGamesLog(responseEvent).games().size());
+        assertEquals(30, readGamesLogFromBody(responseEvent).games().size());
     }
 
-    private static GamesLog getGamesLog(APIGatewayProxyResponseEvent responseEvent) throws JsonProcessingException {
+    private static GamesLog readGamesLogFromBody(APIGatewayProxyResponseEvent responseEvent) throws JsonProcessingException {
         return MAPPER.readValue(responseEvent.getBody(), GamesLog.class);
     }
 }

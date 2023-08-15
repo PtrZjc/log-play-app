@@ -21,7 +21,7 @@ public class ValidationResultAssertion {
             var bodyMap = ObjMapper.INSTANCE.get().readValue(responseBodyWithErrors,
                     new TypeReference<HashMap<String, HashMap<String, String>>>() {
                     });
-            errors = bodyMap.get("errors");
+            errors = bodyMap.get("validationErrors");
         } catch (JsonProcessingException e) {
             Assertions.fail("Provided responseBodyString is not a valid response body with errors");
         }

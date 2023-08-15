@@ -11,6 +11,7 @@ import pl.zajacp.model.GamesLog;
 import pl.zajacp.repository.DynamoDbRepository;
 import pl.zajacp.repository.GamesLogRepository;
 import pl.zajacp.rest.GameValidator;
+import pl.zajacp.rest.RestCommons;
 import pl.zajacp.shared.ObjMapper;
 
 import static pl.zajacp.repository.GameLogRepositoryCommons.GLOBAL_USER;
@@ -54,11 +55,11 @@ public class PutGamesLogHandler implements RequestHandler<APIGatewayProxyRequest
         } catch (JsonProcessingException e) {
             responseEvent
                     .withStatusCode(400)
-                    .withBody(asErrorJson("Invalid JSON input"));
+                    .withBody(asErrorJson(RestCommons.UNSUPPORTED_JSON_ERROR_MESSAGE, e));
         } catch (Exception e) {
             responseEvent
                     .withStatusCode(500)
-                    .withBody(asErrorJson("Internal Server Error"));
+                    .withBody(asErrorJson(RestCommons.SERVER_ERROR_MESSAGE, e));
         }
         return responseEvent;
     }
