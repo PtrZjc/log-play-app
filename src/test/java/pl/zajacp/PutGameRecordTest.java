@@ -3,21 +3,12 @@ package pl.zajacp;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pl.zajacp.model.GameRecord;
 import pl.zajacp.repository.DynamoDbRepository;
 import pl.zajacp.shared.ObjMapper;
 import pl.zajacp.test.FakeContext;
-import pl.zajacp.test.utils.DynamoDbContainer;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
-
-import java.net.URI;
+import pl.zajacp.test.utils.DynamoDbTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -28,42 +19,23 @@ import static pl.zajacp.repository.GameLogRepositoryCommons.getGameRecordKey;
 import static pl.zajacp.rest.RestCommons.UNSUPPORTED_JSON_ERROR_MESSAGE;
 import static pl.zajacp.test.domain.GameRecordAssertion.assertThat;
 import static pl.zajacp.test.domain.GameRecordBuilder.aGameRecord;
-import static pl.zajacp.test.utils.DbTableHelper.createTableWithCompositePrimaryKey;
-import static pl.zajacp.test.utils.DbTableHelper.deleteTable;
 import static pl.zajacp.test.utils.TestData.DIFFERENT_DESCRIPTION;
 import static pl.zajacp.test.utils.TestData.GAME_DATE;
 import static pl.zajacp.test.utils.TestData.GAME_DESCRIPTION;
 import static pl.zajacp.test.utils.TestData.GAME_NAME;
 import static pl.zajacp.test.utils.TestData.TIMESTAMP;
 
+@DynamoDbTest(entityClass = GameRecord.class, hashKey = USER_HASH_KEY, rangeKey = TIMESTAMP_RANGE_KEY)
 public class PutGameRecordTest {
 
-    private static DynamoDbClient client;
-    private static PutGameRecordHandler putGameRecordHandler;
-    private static DynamoDbRepository<GameRecord> repository;
+    private final PutGameRecordHandler putGameRecordHandler;
+    private final DynamoDbRepository<GameRecord> repository;
 
     private static final ObjectMapper MAPPER = ObjMapper.INSTANCE.get();
 
-    @BeforeAll
-    public static void beforeAll() {
-        DynamoDbContainer.startContainer();
-        client = DynamoDbClient.builder()
-                .endpointOverride(URI.create(DynamoDbContainer.getLocalhostPath()))
-//                .endpointOverride(URI.create("http://localhost:8000"))
-                .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create("local", "local")))
-                .region(Region.EU_CENTRAL_1).build();
-        repository = new DynamoDbRepository<>(client, "games_log", GameRecord.class);
+    public PutGameRecordTest(DynamoDbRepository<GameRecord> repository) {
+        this.repository = repository;
         putGameRecordHandler = new PutGameRecordHandler(repository);
-    }
-
-    @BeforeEach
-    public void beforeEach() {
-        createTableWithCompositePrimaryKey(client, USER_HASH_KEY, TIMESTAMP_RANGE_KEY, "games_log");
-    }
-
-    @AfterEach
-    public void afterEach() {
-        deleteTable(client, "games_log");
     }
 
     @Test

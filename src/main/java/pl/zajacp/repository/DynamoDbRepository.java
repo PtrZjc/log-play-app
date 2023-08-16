@@ -16,24 +16,18 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+//https://github.com/aws/aws-sdk-java-v2/issues/2265 <- storing nested objects in dynamodb
 public class DynamoDbRepository<T> {
 
     public enum QueryOrder {
         ASC, DESC;
     }
 
-    //https://github.com/aws/aws-sdk-java-v2/issues/2265 <- storing nested objects in dynamodb
     private final DynamoDbClient client;
 
     private final TableSchema<T> tableSchema;
 
     private final String tableName;
-
-    public DynamoDbRepository(String tableName, Class<T> itemType) {
-        this.client = DynamoDbClient.builder().region(Region.EU_CENTRAL_1).build();
-        this.tableName = tableName;
-        this.tableSchema = TableSchema.fromBean(itemType);
-    }
 
     public DynamoDbRepository(DynamoDbClient client, String tableName, Class<T> itemType) {
         this.client = client;
