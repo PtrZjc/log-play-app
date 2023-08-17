@@ -9,7 +9,7 @@ import pl.zajacp.repository.DynamoDbRepository;
 import pl.zajacp.shared.ObjMapper;
 import pl.zajacp.test.FakeContext;
 import pl.zajacp.test.domain.ValidationResultAssertion;
-import pl.zajacp.test.utils.DynamoDbTest;
+import pl.zajacp.test.database.DynamoDbTest;
 
 import java.util.Map;
 
@@ -18,10 +18,10 @@ import static pl.zajacp.repository.GameLogRepositoryCommons.TIMESTAMP_RANGE_KEY;
 import static pl.zajacp.repository.GameLogRepositoryCommons.USER_HASH_KEY;
 import static pl.zajacp.test.domain.GameRecordAssertion.assertThat;
 import static pl.zajacp.test.domain.GameRecordBuilder.aGameRecord;
-import static pl.zajacp.test.utils.TestData.GAME_DATE;
-import static pl.zajacp.test.utils.TestData.GAME_DESCRIPTION;
-import static pl.zajacp.test.utils.TestData.GAME_NAME;
-import static pl.zajacp.test.utils.TestData.TIMESTAMP;
+import static pl.zajacp.test.TestData.GAME_DATE;
+import static pl.zajacp.test.TestData.GAME_DESCRIPTION;
+import static pl.zajacp.test.TestData.GAME_NAME;
+import static pl.zajacp.test.TestData.TIMESTAMP;
 
 @DynamoDbTest(entityClass = GameRecord.class, hashKey = USER_HASH_KEY, rangeKey = TIMESTAMP_RANGE_KEY)
 public class GetGameRecordHandlerTest {

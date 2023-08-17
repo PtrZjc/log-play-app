@@ -1,4 +1,4 @@
-package pl.zajacp.test.utils;
+package pl.zajacp.test;
 
 import lombok.SneakyThrows;
 

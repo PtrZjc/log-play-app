@@ -8,21 +8,21 @@ import java.util.List;
 
 import static pl.zajacp.repository.GameLogRepositoryCommons.GLOBAL_USER;
 import static pl.zajacp.test.domain.PlayerResultBuilder.*;
-import static pl.zajacp.test.utils.TestData.DURATION;
-import static pl.zajacp.test.utils.TestData.GAME_DATE;
-import static pl.zajacp.test.utils.TestData.GAME_DESCRIPTION;
-import static pl.zajacp.test.utils.TestData.GAME_NAME;
-import static pl.zajacp.test.utils.TestData.PLAYER_1_NAME;
-import static pl.zajacp.test.utils.TestData.PLAYER_1_SCORE;
-import static pl.zajacp.test.utils.TestData.PLAYER_2_NAME;
-import static pl.zajacp.test.utils.TestData.PLAYER_2_SCORE;
-import static pl.zajacp.test.utils.TestData.PLAYER_3_NAME;
-import static pl.zajacp.test.utils.TestData.PLAYER_3_SCORE;
-import static pl.zajacp.test.utils.TestData.PLAYER_4_NAME;
-import static pl.zajacp.test.utils.TestData.PLAYER_4_SCORE;
-import static pl.zajacp.test.utils.TestData.PLAYER_5_NAME;
-import static pl.zajacp.test.utils.TestData.PLAYER_5_SCORE;
-import static pl.zajacp.test.utils.TestData.TIMESTAMP;
+import static pl.zajacp.test.TestData.DURATION;
+import static pl.zajacp.test.TestData.GAME_DATE;
+import static pl.zajacp.test.TestData.GAME_DESCRIPTION;
+import static pl.zajacp.test.TestData.GAME_NAME;
+import static pl.zajacp.test.TestData.PLAYER_1_NAME;
+import static pl.zajacp.test.TestData.PLAYER_1_SCORE;
+import static pl.zajacp.test.TestData.PLAYER_2_NAME;
+import static pl.zajacp.test.TestData.PLAYER_2_SCORE;
+import static pl.zajacp.test.TestData.PLAYER_3_NAME;
+import static pl.zajacp.test.TestData.PLAYER_3_SCORE;
+import static pl.zajacp.test.TestData.PLAYER_4_NAME;
+import static pl.zajacp.test.TestData.PLAYER_4_SCORE;
+import static pl.zajacp.test.TestData.PLAYER_5_NAME;
+import static pl.zajacp.test.TestData.PLAYER_5_SCORE;
+import static pl.zajacp.test.TestData.TIMESTAMP;
 
 public class GameRecordBuilder {
     private Long timestamp = TIMESTAMP;

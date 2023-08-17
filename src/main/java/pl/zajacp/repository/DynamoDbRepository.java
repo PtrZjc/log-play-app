@@ -1,5 +1,6 @@
 package pl.zajacp.repository;
 
+import lombok.Getter;
 import org.apache.commons.collections4.ListUtils;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import software.amazon.awssdk.regions.Region;
@@ -23,10 +24,12 @@ public class DynamoDbRepository<T> {
         ASC, DESC;
     }
 
-    private final DynamoDbClient client;
-
     private final TableSchema<T> tableSchema;
 
+    @Getter
+    private final DynamoDbClient client;
+
+    @Getter
     private final String tableName;
 
     public DynamoDbRepository(DynamoDbClient client, String tableName, Class<T> itemType) {

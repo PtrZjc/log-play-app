@@ -100,6 +100,27 @@ Resources:
         - AttributeName: timestamp
           KeyType: RANGE
       BillingMode: PAY_PER_REQUEST
+  HealthCheckLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./target/log-play-app.jar
+      Handler: pl.zajacp.HealthCheckHandler
+      Runtime: java17
+      MemorySize: 512
+      Timeout: 5
+      Description: Health check for Games Log database
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref GamesLogTable
+      Environment:
+        Variables:
+          GAMES_LOG_TABLE: !Ref GamesLogTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /healthcheck
+            Method: GET
 
 Outputs:
   WebEndpoint:

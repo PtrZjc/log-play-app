@@ -1,4 +1,4 @@
-package pl.zajacp.test.utils;
+package pl.zajacp.test.database;
 
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -15,8 +15,8 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import java.net.URI;
 import java.util.List;
 
-import static pl.zajacp.test.utils.DbTableHelper.createTableWithCompositePrimaryKey;
-import static pl.zajacp.test.utils.DbTableHelper.deleteTable;
+import static pl.zajacp.test.database.DbTableHelper.createTableWithCompositePrimaryKey;
+import static pl.zajacp.test.database.DbTableHelper.deleteTable;
 
 public class DynamoDbTestExtension implements BeforeAllCallback, BeforeEachCallback, AfterEachCallback, ParameterResolver {
 

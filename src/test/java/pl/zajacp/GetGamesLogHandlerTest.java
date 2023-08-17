@@ -10,7 +10,7 @@ import pl.zajacp.model.GamesLog;
 import pl.zajacp.repository.DynamoDbRepository;
 import pl.zajacp.shared.ObjMapper;
 import pl.zajacp.test.FakeContext;
-import pl.zajacp.test.utils.DynamoDbTest;
+import pl.zajacp.test.database.DynamoDbTest;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static pl.zajacp.repository.GameLogRepositoryCommons.TIMESTAMP_RANGE_KEY;
 import static pl.zajacp.repository.GameLogRepositoryCommons.USER_HASH_KEY;
 import static pl.zajacp.test.domain.GamesLogBuilder.aGamesLog;
-import static pl.zajacp.test.utils.TestData.TIMESTAMP;
+import static pl.zajacp.test.TestData.TIMESTAMP;
 
 @DynamoDbTest(entityClass = GameRecord.class, hashKey = USER_HASH_KEY, rangeKey = TIMESTAMP_RANGE_KEY)
 public class GetGamesLogHandlerTest {

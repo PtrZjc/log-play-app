@@ -4,9 +4,9 @@ import pl.zajacp.model.PlayerResult;
 
 import java.math.BigDecimal;
 
-import static pl.zajacp.test.utils.TestData.COMMENT;
-import static pl.zajacp.test.utils.TestData.PLAYER_1_NAME;
-import static pl.zajacp.test.utils.TestData.PLAYER_1_SCORE;
+import static pl.zajacp.test.TestData.COMMENT;
+import static pl.zajacp.test.TestData.PLAYER_1_NAME;
+import static pl.zajacp.test.TestData.PLAYER_1_SCORE;
 
 public class PlayerResultBuilder {
     private String playerName = PLAYER_1_NAME;

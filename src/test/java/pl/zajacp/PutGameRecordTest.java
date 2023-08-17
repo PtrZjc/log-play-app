@@ -8,7 +8,7 @@ import pl.zajacp.model.GameRecord;
 import pl.zajacp.repository.DynamoDbRepository;
 import pl.zajacp.shared.ObjMapper;
 import pl.zajacp.test.FakeContext;
-import pl.zajacp.test.utils.DynamoDbTest;
+import pl.zajacp.test.database.DynamoDbTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -19,11 +19,11 @@ import static pl.zajacp.repository.GameLogRepositoryCommons.getGameRecordKey;
 import static pl.zajacp.rest.RestCommons.UNSUPPORTED_JSON_ERROR_MESSAGE;
 import static pl.zajacp.test.domain.GameRecordAssertion.assertThat;
 import static pl.zajacp.test.domain.GameRecordBuilder.aGameRecord;
-import static pl.zajacp.test.utils.TestData.DIFFERENT_DESCRIPTION;
-import static pl.zajacp.test.utils.TestData.GAME_DATE;
-import static pl.zajacp.test.utils.TestData.GAME_DESCRIPTION;
-import static pl.zajacp.test.utils.TestData.GAME_NAME;
-import static pl.zajacp.test.utils.TestData.TIMESTAMP;
+import static pl.zajacp.test.TestData.DIFFERENT_DESCRIPTION;
+import static pl.zajacp.test.TestData.GAME_DATE;
+import static pl.zajacp.test.TestData.GAME_DESCRIPTION;
+import static pl.zajacp.test.TestData.GAME_NAME;
+import static pl.zajacp.test.TestData.TIMESTAMP;
 
 @DynamoDbTest(entityClass = GameRecord.class, hashKey = USER_HASH_KEY, rangeKey = TIMESTAMP_RANGE_KEY)
 public class PutGameRecordTest {

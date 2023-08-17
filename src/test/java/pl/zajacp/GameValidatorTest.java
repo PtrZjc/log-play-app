@@ -15,7 +15,7 @@ import static pl.zajacp.test.domain.GameRecordBuilder.aGameRecord;
 import static pl.zajacp.test.domain.GamesLogBuilder.aGamesLog;
 import static pl.zajacp.test.domain.PlayerResultBuilder.aPlayerResult;
 import static pl.zajacp.test.domain.ValidationResultAssertion.assertThat;
-import static pl.zajacp.test.utils.TestData.INVALID_GAME_DATE;
+import static pl.zajacp.test.TestData.INVALID_GAME_DATE;
 
 public class GameValidatorTest {
 

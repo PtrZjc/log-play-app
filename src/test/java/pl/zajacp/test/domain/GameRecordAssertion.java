@@ -6,16 +6,16 @@ import pl.zajacp.model.GameRecord;
 
 import java.util.Optional;
 
-import static pl.zajacp.test.utils.TestData.PLAYER_1_NAME;
-import static pl.zajacp.test.utils.TestData.PLAYER_1_SCORE;
-import static pl.zajacp.test.utils.TestData.PLAYER_2_NAME;
-import static pl.zajacp.test.utils.TestData.PLAYER_2_SCORE;
-import static pl.zajacp.test.utils.TestData.PLAYER_3_NAME;
-import static pl.zajacp.test.utils.TestData.PLAYER_3_SCORE;
-import static pl.zajacp.test.utils.TestData.PLAYER_4_NAME;
-import static pl.zajacp.test.utils.TestData.PLAYER_4_SCORE;
-import static pl.zajacp.test.utils.TestData.PLAYER_5_NAME;
-import static pl.zajacp.test.utils.TestData.PLAYER_5_SCORE;
+import static pl.zajacp.test.TestData.PLAYER_1_NAME;
+import static pl.zajacp.test.TestData.PLAYER_1_SCORE;
+import static pl.zajacp.test.TestData.PLAYER_2_NAME;
+import static pl.zajacp.test.TestData.PLAYER_2_SCORE;
+import static pl.zajacp.test.TestData.PLAYER_3_NAME;
+import static pl.zajacp.test.TestData.PLAYER_3_SCORE;
+import static pl.zajacp.test.TestData.PLAYER_4_NAME;
+import static pl.zajacp.test.TestData.PLAYER_4_SCORE;
+import static pl.zajacp.test.TestData.PLAYER_5_NAME;
+import static pl.zajacp.test.TestData.PLAYER_5_SCORE;
 
 @AllArgsConstructor
 public class GameRecordAssertion {
