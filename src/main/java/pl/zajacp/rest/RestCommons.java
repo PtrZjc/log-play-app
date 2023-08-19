@@ -19,20 +19,14 @@ public class RestCommons {
 
     public static final String SERVER_ERROR_MESSAGE = "Internal Server Error";
     public static final String UNSUPPORTED_JSON_ERROR_MESSAGE = "Unsupported json input obtained";
+    public static final String INVALID_API_KEY = "'Api-Key' header does not match";
 
     public static APIGatewayProxyResponseEvent getResponseEvent() {
-        var response = new APIGatewayProxyResponseEvent();
-        response.setHeaders(DEFAULT_HEADERS);
-        return response;
+        return new APIGatewayProxyResponseEvent().withHeaders(DEFAULT_HEADERS);
     }
 
     public static Optional<String> getHeaderValue(APIGatewayProxyRequestEvent requestEvent, String headerKey) {
         return Optional.ofNullable(requestEvent.getHeaders()).map(headers -> headers.get(headerKey));
-    }
-
-    public static boolean apiKeysMatch(APIGatewayProxyRequestEvent requestEvent) {
-        Optional<String> userApiKey = getHeaderValue(requestEvent, API_KEY_HEADER);
-        return userApiKey.isPresent() && userApiKey.get().equals(System.getenv(API_KEY_ENV));
     }
 
     public static APIGatewayProxyResponseEvent getValidationFailedResponseEvent(Map<String, String> validationErrors) throws JsonProcessingException {
@@ -40,13 +34,6 @@ public class RestCommons {
         var jsonErrors = ObjMapper.INSTANCE.get().writeValueAsString(Map.of("validationErrors", validationErrors));
         response.setStatusCode(400);
         response.setBody(jsonErrors);
-        return response;
-    }
-
-    public static APIGatewayProxyResponseEvent getUnauthorizedResponseEvent() throws JsonProcessingException {
-        var response = getResponseEvent();
-        response.setStatusCode(403);
-        response.setBody(asErrorJson("'Api-Key' header does not match)"));
         return response;
     }
 
@@ -59,7 +46,7 @@ public class RestCommons {
     public static String asErrorJson(String errorCause, Exception exception) {
         return ObjMapper.INSTANCE.get().writeValueAsString(Map.of(
                 "errorCause", errorCause,
-                "details", exception.getMessage()
+                "details", exception
         ));
     }
 }

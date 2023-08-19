@@ -26,8 +26,6 @@ public class HealthCheckHandler implements RequestHandler<APIGatewayProxyRequest
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
-
-        var responseEvent = getResponseEvent().withStatusCode(200);
         try {
             DescribeTableRequest describeTableRequest = DescribeTableRequest.builder()
                     .tableName(gameItemRepository.getTableName()).build();
@@ -37,7 +35,9 @@ public class HealthCheckHandler implements RequestHandler<APIGatewayProxyRequest
                     "healthCheckSuccessful", true,
                     "describeTable", describeTableResponse.toString()
             ));
-            responseEvent.withBody(healthCheckResponse);
+            return getResponseEvent()
+                    .withStatusCode(200)
+                    .withBody(healthCheckResponse);
         } catch (Exception e) {
             String failedResponse;
             try {
@@ -49,8 +49,9 @@ public class HealthCheckHandler implements RequestHandler<APIGatewayProxyRequest
             } catch (JsonProcessingException ex) {
                 failedResponse = e.getMessage();
             }
-            responseEvent.withBody(failedResponse);
+            return getResponseEvent()
+                    .withStatusCode(200)
+                    .withBody(failedResponse);
         }
-        return responseEvent;
     }
 }

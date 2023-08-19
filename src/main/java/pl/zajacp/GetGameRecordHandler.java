@@ -1,15 +1,12 @@
 package pl.zajacp;
 
-import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import pl.zajacp.model.GameRecord;
 import pl.zajacp.repository.DynamoDbRepository;
 import pl.zajacp.repository.GamesLogRepository;
 import pl.zajacp.repository.ItemQueryKey;
-import pl.zajacp.rest.RestCommons;
 import pl.zajacp.shared.ObjMapper;
 
 import java.util.List;
@@ -23,16 +20,13 @@ import static pl.zajacp.rest.RequestParamValidator.DataType.INTEGER;
 import static pl.zajacp.rest.RequestParamValidator.ParamType.QUERY;
 import static pl.zajacp.rest.RequestParamValidator.RequiredParam;
 import static pl.zajacp.rest.RequestParamValidator.validateParameters;
-import static pl.zajacp.rest.RestCommons.*;
-import static pl.zajacp.rest.RestCommons.SERVER_ERROR_MESSAGE;
 import static pl.zajacp.rest.RestCommons.USER_HEADER;
 import static pl.zajacp.rest.RestCommons.asErrorJson;
-import static pl.zajacp.rest.RestCommons.getResponseEvent;
 import static pl.zajacp.rest.RestCommons.getHeaderValue;
+import static pl.zajacp.rest.RestCommons.getResponseEvent;
 import static pl.zajacp.rest.RestCommons.getValidationFailedResponseEvent;
 
-@AllArgsConstructor
-public class GetGameRecordHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+public class GetGameRecordHandler extends BaseGameRecordHandler {
 
     private final static String NOT_FOUND_MESSAGE = "Game record not found";
 
@@ -40,48 +34,35 @@ public class GetGameRecordHandler implements RequestHandler<APIGatewayProxyReque
             new RequiredParam(TIMESTAMP_RANGE_KEY, QUERY, INTEGER)
     );
 
-    private final DynamoDbRepository<GameRecord> gameItemRepository;
-
     public GetGameRecordHandler() {
-        this.gameItemRepository = GamesLogRepository.INSTANCE.get();
+        super(GamesLogRepository.INSTANCE.get());
+    }
+
+    public GetGameRecordHandler(DynamoDbRepository<GameRecord> gameItemRepository) {
+        super(gameItemRepository);
     }
 
     @Override
-    public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
-        context.getLogger().log("Received request: " + requestEvent);
+    protected APIGatewayProxyResponseEvent handleValidRequestEvent(APIGatewayProxyRequestEvent requestEvent) throws JsonProcessingException {
+        Map<String, String> validationErrors = validateParameters(requestEvent, REQUIRED_PARAMS);
+        if (!validationErrors.isEmpty()) return getValidationFailedResponseEvent(validationErrors);
 
-        var responseEvent = getResponseEvent();
-        try {
-            if (!apiKeysMatch(requestEvent)) return getUnauthorizedResponseEvent();
+        Map<String, String> queryParams = Optional.ofNullable(requestEvent.getQueryStringParameters())
+                .orElse(Map.of());
 
-            Map<String, String> validationErrors = validateParameters(requestEvent, REQUIRED_PARAMS);
-            if (!validationErrors.isEmpty()) return getValidationFailedResponseEvent(validationErrors);
+        ItemQueryKey itemQueryKey = getGameRecordKey(
+                Long.valueOf(queryParams.get(TIMESTAMP_RANGE_KEY)),
+                getHeaderValue(requestEvent, USER_HEADER).orElse(GLOBAL_USER)
+        );
 
-            Map<String, String> queryParams = Optional.ofNullable(requestEvent.getQueryStringParameters())
-                    .orElse(Map.of());
+        Optional<GameRecord> item = gameItemRepository.getItem(itemQueryKey);
 
-            ItemQueryKey itemQueryKey = getGameRecordKey(
-                    Long.valueOf(queryParams.get(TIMESTAMP_RANGE_KEY)),
-                    getHeaderValue(requestEvent, USER_HEADER).orElse(GLOBAL_USER)
-            );
-
-            Optional<GameRecord> item = gameItemRepository.getItem(itemQueryKey);
-
-            if (item.isPresent()) {
-                String gameJson = ObjMapper.INSTANCE.get().writeValueAsString(item.get());
-                responseEvent
-                        .withBody(gameJson)
-                        .withStatusCode(200);
-            } else {
-                responseEvent
+        return item.isPresent() ?
+                getResponseEvent()
+                        .withBody(ObjMapper.INSTANCE.get().writeValueAsString(item.get()))
+                        .withStatusCode(200) :
+                getResponseEvent()
                         .withBody(asErrorJson(NOT_FOUND_MESSAGE))
                         .withStatusCode(404);
-            }
-        } catch (Exception e) {
-            responseEvent
-                    .withStatusCode(500)
-                    .withBody(asErrorJson(SERVER_ERROR_MESSAGE, e));
-        }
-        return responseEvent;
     }
 }
