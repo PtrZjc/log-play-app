@@ -11,7 +11,10 @@ import java.util.Optional;
 
 public class RestCommons {
 
-    public static final String USER_HEADER = "userName";
+    public static final String USER_HEADER = "User-Name";
+    public static final String API_KEY_HEADER = "Api-Key";
+    public final static String API_KEY_ENV = "API_KEY";
+
     public static final Map<String, String> DEFAULT_HEADERS = Map.of("Content-Type", "application/json");
 
     public static final String SERVER_ERROR_MESSAGE = "Internal Server Error";
@@ -23,6 +26,15 @@ public class RestCommons {
         return response;
     }
 
+    public static Optional<String> getHeaderValue(APIGatewayProxyRequestEvent requestEvent, String headerKey) {
+        return Optional.ofNullable(requestEvent.getHeaders()).map(headers -> headers.get(headerKey));
+    }
+
+    public static boolean apiKeysMatch(APIGatewayProxyRequestEvent requestEvent) {
+        Optional<String> userApiKey = getHeaderValue(requestEvent, API_KEY_HEADER);
+        return userApiKey.isPresent() && userApiKey.get().equals(System.getenv(API_KEY_ENV));
+    }
+
     public static APIGatewayProxyResponseEvent getValidationFailedResponseEvent(Map<String, String> validationErrors) throws JsonProcessingException {
         var response = getResponseEvent();
         var jsonErrors = ObjMapper.INSTANCE.get().writeValueAsString(Map.of("validationErrors", validationErrors));
@@ -31,10 +43,11 @@ public class RestCommons {
         return response;
     }
 
-    public static String getUserFromHeader(APIGatewayProxyRequestEvent requestEvent, String fallbackUser) {
-        var headers = Optional.ofNullable(requestEvent.getHeaders()).orElse(Map.of());
-        var userFromHeader = headers.get(USER_HEADER);
-        return userFromHeader != null ? userFromHeader : fallbackUser;
+    public static APIGatewayProxyResponseEvent getUnauthorizedResponseEvent() throws JsonProcessingException {
+        var response = getResponseEvent();
+        response.setStatusCode(403);
+        response.setBody(asErrorJson("'Api-Key' header does not match)"));
+        return response;
     }
 
     @SneakyThrows

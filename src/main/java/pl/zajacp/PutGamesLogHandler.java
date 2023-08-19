@@ -15,9 +15,12 @@ import pl.zajacp.rest.RestCommons;
 import pl.zajacp.shared.ObjMapper;
 
 import static pl.zajacp.repository.GameLogRepositoryCommons.GLOBAL_USER;
+import static pl.zajacp.rest.RestCommons.USER_HEADER;
+import static pl.zajacp.rest.RestCommons.apiKeysMatch;
 import static pl.zajacp.rest.RestCommons.asErrorJson;
 import static pl.zajacp.rest.RestCommons.getResponseEvent;
-import static pl.zajacp.rest.RestCommons.getUserFromHeader;
+import static pl.zajacp.rest.RestCommons.getHeaderValue;
+import static pl.zajacp.rest.RestCommons.getUnauthorizedResponseEvent;
 import static pl.zajacp.rest.RestCommons.getValidationFailedResponseEvent;
 
 @AllArgsConstructor
@@ -35,6 +38,8 @@ public class PutGamesLogHandler implements RequestHandler<APIGatewayProxyRequest
 
         var responseEvent = getResponseEvent();
         try {
+            if (!apiKeysMatch(requestEvent)) return getUnauthorizedResponseEvent();
+
             GamesLog gamesLog = ObjMapper.INSTANCE.get().readValue(requestEvent.getBody(), GamesLog.class);
 
             var validationErrors = GameValidator.validateGamesLog(gamesLog);
@@ -65,7 +70,7 @@ public class PutGamesLogHandler implements RequestHandler<APIGatewayProxyRequest
     }
 
     private static void enrichWithUser(APIGatewayProxyRequestEvent requestEvent, GamesLog gamesLog) {
-        String user = getUserFromHeader(requestEvent, GLOBAL_USER);
+        String user = getHeaderValue(requestEvent, USER_HEADER).orElse(GLOBAL_USER);
         gamesLog.games().forEach(g -> g.setUserName(user));
     }
 }

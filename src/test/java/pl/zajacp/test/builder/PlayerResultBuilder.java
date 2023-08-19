@@ -1,4 +1,4 @@
-package pl.zajacp.test.domain;
+package pl.zajacp.test.builder;
 
 import pl.zajacp.model.PlayerResult;
 

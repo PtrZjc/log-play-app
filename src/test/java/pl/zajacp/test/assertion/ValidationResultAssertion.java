@@ -1,4 +1,4 @@
-package pl.zajacp.test.domain;
+package pl.zajacp.test.assertion;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;

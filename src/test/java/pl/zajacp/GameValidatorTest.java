@@ -11,10 +11,10 @@ import static pl.zajacp.rest.GameValidator.NON_EMPTY_REQUIRED;
 import static pl.zajacp.rest.GameValidator.REQUIRED_PARAM;
 import static pl.zajacp.rest.GameValidator.validateGameRecord;
 import static pl.zajacp.rest.GameValidator.validateGamesLog;
-import static pl.zajacp.test.domain.GameRecordBuilder.aGameRecord;
-import static pl.zajacp.test.domain.GamesLogBuilder.aGamesLog;
-import static pl.zajacp.test.domain.PlayerResultBuilder.aPlayerResult;
-import static pl.zajacp.test.domain.ValidationResultAssertion.assertThat;
+import static pl.zajacp.test.builder.GameRecordBuilder.aGameRecord;
+import static pl.zajacp.test.builder.GamesLogBuilder.aGamesLog;
+import static pl.zajacp.test.builder.PlayerResultBuilder.aPlayerResult;
+import static pl.zajacp.test.assertion.ValidationResultAssertion.assertThat;
 import static pl.zajacp.test.TestData.INVALID_GAME_DATE;
 
 public class GameValidatorTest {

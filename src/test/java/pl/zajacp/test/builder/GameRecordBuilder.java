@@ -1,4 +1,4 @@
-package pl.zajacp.test.domain;
+package pl.zajacp.test.builder;
 
 import pl.zajacp.model.GameRecord;
 import pl.zajacp.model.PlayerResult;
@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static pl.zajacp.repository.GameLogRepositoryCommons.GLOBAL_USER;
-import static pl.zajacp.test.domain.PlayerResultBuilder.*;
 import static pl.zajacp.test.TestData.DURATION;
 import static pl.zajacp.test.TestData.GAME_DATE;
 import static pl.zajacp.test.TestData.GAME_DESCRIPTION;
@@ -23,6 +22,7 @@ import static pl.zajacp.test.TestData.PLAYER_4_SCORE;
 import static pl.zajacp.test.TestData.PLAYER_5_NAME;
 import static pl.zajacp.test.TestData.PLAYER_5_SCORE;
 import static pl.zajacp.test.TestData.TIMESTAMP;
+import static pl.zajacp.test.builder.PlayerResultBuilder.aPlayerResult;
 
 public class GameRecordBuilder {
     private Long timestamp = TIMESTAMP;

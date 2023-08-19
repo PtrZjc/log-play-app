@@ -9,15 +9,19 @@ import lombok.AllArgsConstructor;
 import pl.zajacp.model.GameRecord;
 import pl.zajacp.repository.DynamoDbRepository;
 import pl.zajacp.repository.GamesLogRepository;
+
 import pl.zajacp.rest.GameValidator;
 import pl.zajacp.shared.ObjMapper;
 
 import static pl.zajacp.repository.GameLogRepositoryCommons.GLOBAL_USER;
 import static pl.zajacp.rest.RestCommons.SERVER_ERROR_MESSAGE;
 import static pl.zajacp.rest.RestCommons.UNSUPPORTED_JSON_ERROR_MESSAGE;
+import static pl.zajacp.rest.RestCommons.USER_HEADER;
+import static pl.zajacp.rest.RestCommons.apiKeysMatch;
 import static pl.zajacp.rest.RestCommons.asErrorJson;
 import static pl.zajacp.rest.RestCommons.getResponseEvent;
-import static pl.zajacp.rest.RestCommons.getUserFromHeader;
+import static pl.zajacp.rest.RestCommons.getHeaderValue;
+import static pl.zajacp.rest.RestCommons.getUnauthorizedResponseEvent;
 import static pl.zajacp.rest.RestCommons.getValidationFailedResponseEvent;
 
 @AllArgsConstructor
@@ -35,6 +39,8 @@ public class PutGameRecordHandler implements RequestHandler<APIGatewayProxyReque
 
         var responseEvent = getResponseEvent();
         try {
+            if (!apiKeysMatch(requestEvent)) return getUnauthorizedResponseEvent();
+
             GameRecord gameRecord = ObjMapper.INSTANCE.get().readValue(requestEvent.getBody(), GameRecord.class);
 
             var validationErrors = GameValidator.validateGameRecord(gameRecord);
@@ -43,7 +49,9 @@ public class PutGameRecordHandler implements RequestHandler<APIGatewayProxyReque
                 return getValidationFailedResponseEvent(validationErrors);
             }
 
-            gameRecord.setUserName(getUserFromHeader(requestEvent, GLOBAL_USER));
+            String user = getHeaderValue(requestEvent, USER_HEADER).orElse(GLOBAL_USER);
+            gameRecord.setUserName(user);
+
             gameItemRepository.putItem(gameRecord);
 
             responseEvent.withStatusCode(204);

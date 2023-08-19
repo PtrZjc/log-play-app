@@ -6,6 +6,8 @@ paths:
   /games/log:
     put:
       summary: Performs PUT on every single game record inside a log
+      security:
+        - ApiKeyAuth: []
       requestBody:
         required: true
         content:
@@ -17,6 +19,8 @@ paths:
           description: OK
     get:
       summary: Get log of all games
+      security:
+        - ApiKeyAuth: []
       responses:
         '200':
           description: OK
@@ -29,6 +33,8 @@ paths:
   /games:
     get:
       summary: Get specific game record
+      security:
+        - ApiKeyAuth: []
       parameters:
         - name: gameName
           in: query
@@ -50,6 +56,8 @@ paths:
                 $ref: '#/components/schemas/GameLog'
     put:
       summary: Put a single game record
+      security:
+        - ApiKeyAuth: []
       requestBody:
         required: true
         content:
@@ -59,7 +67,28 @@ paths:
       responses:
         '200':
           description: OK
+  /healthcheck:
+    get:
+      summary: Health check for Games Log database
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string
+
 components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Api-Key
   schemas:
     GameLog:
       type: object

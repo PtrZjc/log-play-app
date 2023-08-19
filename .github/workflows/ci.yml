@@ -38,4 +38,12 @@ jobs:
           aws-region: eu-central-1
 
       - name: Deploy lambda with SAM
-        run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --stack-name log-play-app --s3-bucket pioter-lambdas  --capabilities CAPABILITY_IAM --region eu-central-1
+        run: |
+          sam deploy \
+            --no-confirm-changeset \
+            --no-fail-on-empty-changeset \
+            --stack-name log-play-app \
+            --s3-bucket pioter-lambdas  \
+            --capabilities CAPABILITY_IAM \
+            --region eu-central-1 \
+            --parameter-overrides ApiKey=${{ secrets.API_KEY }}

@@ -1,4 +1,4 @@
-package pl.zajacp.test.domain;
+package pl.zajacp.test.builder;
 
 import pl.zajacp.model.GameRecord;
 import pl.zajacp.model.GamesLog;
@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static pl.zajacp.test.domain.GameRecordBuilder.*;
+import static pl.zajacp.test.builder.GameRecordBuilder.aGameRecord;
 
 public class GamesLogBuilder {
     private List<GameRecord> gamesLog = new ArrayList<>();

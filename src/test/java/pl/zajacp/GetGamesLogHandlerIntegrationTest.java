@@ -9,27 +9,24 @@ import pl.zajacp.model.GameRecord;
 import pl.zajacp.model.GamesLog;
 import pl.zajacp.repository.DynamoDbRepository;
 import pl.zajacp.shared.ObjMapper;
+import pl.zajacp.test.BaseIntegrationHandlerTest;
 import pl.zajacp.test.FakeContext;
-import pl.zajacp.test.database.DynamoDbTest;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static pl.zajacp.repository.GameLogRepositoryCommons.TIMESTAMP_RANGE_KEY;
-import static pl.zajacp.repository.GameLogRepositoryCommons.USER_HASH_KEY;
-import static pl.zajacp.test.domain.GamesLogBuilder.aGamesLog;
 import static pl.zajacp.test.TestData.TIMESTAMP;
+import static pl.zajacp.test.builder.GamesLogBuilder.aGamesLog;
 
-@DynamoDbTest(entityClass = GameRecord.class, hashKey = USER_HASH_KEY, rangeKey = TIMESTAMP_RANGE_KEY)
-public class GetGamesLogHandlerTest {
+public class GetGamesLogHandlerIntegrationTest extends BaseIntegrationHandlerTest {
 
     private final DynamoDbRepository<GameRecord> repository;
     private final GetGamesLogHandler getGamesLogHandler;
 
     private static final ObjectMapper MAPPER = ObjMapper.INSTANCE.get();
 
-    public GetGamesLogHandlerTest(DynamoDbRepository<GameRecord> repository) {
+    public GetGamesLogHandlerIntegrationTest(DynamoDbRepository<GameRecord> repository) {
         this.repository = repository;
         getGamesLogHandler = new GetGamesLogHandler(repository);
     }
@@ -37,7 +34,7 @@ public class GetGamesLogHandlerTest {
     @Test
     public void shouldGetEmptyListWhenNoGamesExist() throws JsonProcessingException {
         //when
-        var responseEvent = getGamesLogHandler.handleRequest(new APIGatewayProxyRequestEvent(), new FakeContext());
+        var responseEvent = getGamesLogHandler.handleRequest(getRequestEventWithValidApiKey(), new FakeContext());
 
         //then
         assertEquals(200, responseEvent.getStatusCode());
@@ -52,11 +49,21 @@ public class GetGamesLogHandlerTest {
         repository.batchPutItems(games);
 
         //when
-        var responseEvent = getGamesLogHandler.handleRequest(new APIGatewayProxyRequestEvent(), new FakeContext());
+        var responseEvent = getGamesLogHandler.handleRequest(getRequestEventWithValidApiKey(), new FakeContext());
 
         //then
         assertEquals(200, responseEvent.getStatusCode());
         assertEquals(30, readGamesLogFromBody(responseEvent).games().size());
+    }
+
+    @Test
+    public void shouldGet403WhenAbsentApiKey() {
+        //when
+        var responseEvent = getGamesLogHandler.handleRequest(
+                new APIGatewayProxyRequestEvent(), new FakeContext());
+
+        //then
+        assertEquals(403, responseEvent.getStatusCode());
     }
 
     private static GamesLog readGamesLogFromBody(APIGatewayProxyResponseEvent responseEvent) throws JsonProcessingException {

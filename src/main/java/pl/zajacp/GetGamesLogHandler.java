@@ -18,9 +18,12 @@ import java.util.List;
 import static pl.zajacp.repository.GameLogRepositoryCommons.GLOBAL_USER;
 import static pl.zajacp.repository.GameLogRepositoryCommons.getGamesLogKey;
 import static pl.zajacp.rest.RestCommons.SERVER_ERROR_MESSAGE;
+import static pl.zajacp.rest.RestCommons.USER_HEADER;
+import static pl.zajacp.rest.RestCommons.apiKeysMatch;
 import static pl.zajacp.rest.RestCommons.asErrorJson;
+import static pl.zajacp.rest.RestCommons.getHeaderValue;
 import static pl.zajacp.rest.RestCommons.getResponseEvent;
-import static pl.zajacp.rest.RestCommons.getUserFromHeader;
+import static pl.zajacp.rest.RestCommons.getUnauthorizedResponseEvent;
 
 @AllArgsConstructor
 public class GetGamesLogHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
@@ -37,7 +40,10 @@ public class GetGamesLogHandler implements RequestHandler<APIGatewayProxyRequest
 
         var responseEvent = getResponseEvent();
         try {
-            ItemQueryKey itemQueryKey = getGamesLogKey(getUserFromHeader(requestEvent, GLOBAL_USER));
+            if (!apiKeysMatch(requestEvent)) return getUnauthorizedResponseEvent();
+
+            String user = getHeaderValue(requestEvent, USER_HEADER).orElse(GLOBAL_USER);
+            ItemQueryKey itemQueryKey = getGamesLogKey(user);
 
             List<GameRecord> games = gameItemRepository.getItems(itemQueryKey, QueryOrder.DESC);
 

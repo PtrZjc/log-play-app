@@ -10,35 +10,33 @@ import pl.zajacp.model.GamesLog;
 import pl.zajacp.repository.DynamoDbRepository;
 import pl.zajacp.repository.ItemQueryKey;
 import pl.zajacp.shared.ObjMapper;
+import pl.zajacp.test.BaseIntegrationHandlerTest;
 import pl.zajacp.test.FakeContext;
-import pl.zajacp.test.database.DynamoDbTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static pl.zajacp.repository.DynamoDbRepository.QueryOrder.ASC;
 import static pl.zajacp.repository.GameLogRepositoryCommons.GLOBAL_USER;
-import static pl.zajacp.repository.GameLogRepositoryCommons.TIMESTAMP_RANGE_KEY;
 import static pl.zajacp.repository.GameLogRepositoryCommons.USER_HASH_KEY;
 import static pl.zajacp.repository.GameLogRepositoryCommons.getGameRecordKey;
 import static pl.zajacp.rest.RestCommons.UNSUPPORTED_JSON_ERROR_MESSAGE;
-import static pl.zajacp.test.domain.GameRecordAssertion.assertThat;
-import static pl.zajacp.test.domain.GameRecordBuilder.aGameRecord;
-import static pl.zajacp.test.domain.GamesLogBuilder.aGamesLog;
 import static pl.zajacp.test.TestData.DIFFERENT_DESCRIPTION;
 import static pl.zajacp.test.TestData.GAME_DATE;
 import static pl.zajacp.test.TestData.GAME_DESCRIPTION;
 import static pl.zajacp.test.TestData.GAME_NAME;
 import static pl.zajacp.test.TestData.TIMESTAMP;
+import static pl.zajacp.test.assertion.GameRecordAssertion.assertThat;
+import static pl.zajacp.test.builder.GameRecordBuilder.aGameRecord;
+import static pl.zajacp.test.builder.GamesLogBuilder.aGamesLog;
 
-@DynamoDbTest(entityClass = GameRecord.class, hashKey = USER_HASH_KEY, rangeKey = TIMESTAMP_RANGE_KEY)
-public class PutGamesLogHandlerTest {
+public class PutGamesLogHandlerIntegrationTest extends BaseIntegrationHandlerTest {
 
     private final PutGamesLogHandler putGamesLogHandler;
     private final DynamoDbRepository<GameRecord> repository;
 
     private static final ObjectMapper MAPPER = ObjMapper.INSTANCE.get();
 
-    public PutGamesLogHandlerTest(DynamoDbRepository<GameRecord> repository) {
+    public PutGamesLogHandlerIntegrationTest(DynamoDbRepository<GameRecord> repository) {
         this.repository = repository;
         this.putGamesLogHandler = new PutGamesLogHandler(repository);
     }
@@ -49,7 +47,8 @@ public class PutGamesLogHandlerTest {
         GamesLog gamesLog = aGamesLog().withGameRecord(
                 aGameRecord().withStandard5PlayersResult().build()).build();
 
-        var requestEvent = new APIGatewayProxyRequestEvent().withBody(MAPPER.writeValueAsString(gamesLog));
+        var requestEvent = getRequestEventWithValidApiKey()
+                .withBody(MAPPER.writeValueAsString(gamesLog));
 
         //when
         var responseEvent = putGamesLogHandler.handleRequest(requestEvent, new FakeContext());
@@ -79,7 +78,8 @@ public class PutGamesLogHandlerTest {
                         .withGameDescription(DIFFERENT_DESCRIPTION)
                         .build()).build();
 
-        var requestEvent = new APIGatewayProxyRequestEvent().withBody(MAPPER.writeValueAsString(gamesLog));
+        var requestEvent = getRequestEventWithValidApiKey()
+                .withBody(MAPPER.writeValueAsString(gamesLog));
 
         //when
         var responseEvent = putGamesLogHandler.handleRequest(requestEvent, new FakeContext());
@@ -100,7 +100,8 @@ public class PutGamesLogHandlerTest {
 
         GamesLog gamesLog = aGamesLog().withMultipleDefaultGameRecordsStartingWithTimestamp(TIMESTAMP, 30).build();
 
-        var requestEvent = new APIGatewayProxyRequestEvent().withBody(MAPPER.writeValueAsString(gamesLog));
+        var requestEvent = getRequestEventWithValidApiKey()
+                .withBody(MAPPER.writeValueAsString(gamesLog));
 
         //when
         var responseEvent = putGamesLogHandler.handleRequest(requestEvent, new FakeContext());
@@ -116,8 +117,8 @@ public class PutGamesLogHandlerTest {
     @Test
     public void shouldGet400ForInvalidJsonInput() {
         //given
-        String invalidJson = "{\"games\": invalid-json-here }";
-        var requestEvent = new APIGatewayProxyRequestEvent().withBody(invalidJson);
+        var requestEvent = getRequestEventWithValidApiKey()
+                .withBody("{\"games\": invalid-json-here }");
 
         //when
         var responseEvent = putGamesLogHandler.handleRequest(requestEvent, new FakeContext());
@@ -125,5 +126,15 @@ public class PutGamesLogHandlerTest {
         //then
         assertEquals(400, responseEvent.getStatusCode());
         assertTrue(responseEvent.getBody().contains(UNSUPPORTED_JSON_ERROR_MESSAGE));
+    }
+
+    @Test
+    public void shouldGet403WhenAbsentApiKey() {
+        //when
+        var responseEvent = putGamesLogHandler.handleRequest(
+                new APIGatewayProxyRequestEvent(), new FakeContext());
+
+        //then
+        assertEquals(403, responseEvent.getStatusCode());
     }
 }

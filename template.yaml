@@ -1,6 +1,11 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: 'AWS::Serverless-2016-10-31'
 
+Parameters:
+  ApiKey:
+    Type: String
+    NoEcho: true
+
 Resources:
   GetGameRecord:
     Type: AWS::Serverless::Function
@@ -17,6 +22,7 @@ Resources:
       Environment:
         Variables:
           GAMES_LOG_TABLE: !Ref GamesLogTable
+          API_KEY: !Ref ApiKey
       Events:
         Api:
           Type: Api
@@ -38,6 +44,7 @@ Resources:
       Environment:
         Variables:
           GAMES_LOG_TABLE: !Ref GamesLogTable
+          API_KEY: !Ref ApiKey
       Events:
         Api:
           Type: Api
@@ -59,6 +66,7 @@ Resources:
       Environment:
         Variables:
           GAMES_LOG_TABLE: !Ref GamesLogTable
+          API_KEY: !Ref ApiKey
       Events:
         Api:
           Type: Api
@@ -80,6 +88,7 @@ Resources:
       Environment:
         Variables:
           GAMES_LOG_TABLE: !Ref GamesLogTable
+          API_KEY: !Ref ApiKey
       Events:
         Api:
           Type: Api

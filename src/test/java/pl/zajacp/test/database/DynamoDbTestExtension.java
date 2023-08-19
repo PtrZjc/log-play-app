@@ -17,6 +17,7 @@ import java.util.List;
 
 import static pl.zajacp.test.database.DbTableHelper.createTableWithCompositePrimaryKey;
 import static pl.zajacp.test.database.DbTableHelper.deleteTable;
+import static pl.zajacp.test.infra.ExtensionCommons.getAnnotation;
 
 public class DynamoDbTestExtension implements BeforeAllCallback, BeforeEachCallback, AfterEachCallback, ParameterResolver {
 
@@ -43,7 +44,7 @@ public class DynamoDbTestExtension implements BeforeAllCallback, BeforeEachCallb
 
     @Override
     public void beforeAll(ExtensionContext context) {
-        TABLE_NAME = getAnnotation(context).entityClass().getSimpleName() + "Table";
+        TABLE_NAME = getAnnotation(context, DynamoDbTest.class).entityClass().getSimpleName() + "Table";
 
         if (!USE_LOCAL_DB) DynamoDbContainer.startContainer();
 
@@ -54,22 +55,18 @@ public class DynamoDbTestExtension implements BeforeAllCallback, BeforeEachCallb
                 .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create("local", "local")))
                 .region(Region.EU_CENTRAL_1).build();
 
-        var repository = new DynamoDbRepository<>(client, TABLE_NAME, getAnnotation(context).entityClass());
+        var repository = new DynamoDbRepository<>(client, TABLE_NAME, getAnnotation(context, DynamoDbTest.class).entityClass());
 
         context.getStore(NAMESPACE).put(DynamoDbClient.class, client);
         context.getStore(NAMESPACE).put(DynamoDbRepository.class, repository);
-    }
-
-    private static DynamoDbTest getAnnotation(ExtensionContext context) {
-        return context.getRequiredTestClass().getAnnotation(DynamoDbTest.class);
     }
 
     @Override
     public void beforeEach(ExtensionContext context) {
         createTableWithCompositePrimaryKey(
                 getDependencyFromContext(context, DynamoDbClient.class),
-                getAnnotation(context).hashKey(),
-                getAnnotation(context).rangeKey(),
+                getAnnotation(context, DynamoDbTest.class).hashKey(),
+                getAnnotation(context, DynamoDbTest.class).rangeKey(),
                 TABLE_NAME);
     }
 
