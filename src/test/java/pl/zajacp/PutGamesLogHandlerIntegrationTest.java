@@ -129,6 +129,24 @@ public class PutGamesLogHandlerIntegrationTest extends BaseIntegrationHandlerTes
     }
 
     @Test
+    public void shouldReturn400ForDuplicatedKeys() throws JsonProcessingException {
+        //given
+        GamesLog gamesLog = aGamesLog()
+                .withGameRecord(aGameRecord().withStandard5PlayersResult().build())
+                .withGameRecord(aGameRecord().withStandard5PlayersResult().build()).build();
+
+        var requestEvent = getRequestEventWithValidApiKey()
+                .withBody(MAPPER.writeValueAsString(gamesLog));
+
+        //when
+        var responseEvent = putGamesLogHandler.handleRequest(requestEvent, new FakeContext());
+
+        //then
+        assertEquals(400, responseEvent.getStatusCode());
+    }
+
+
+    @Test
     public void shouldGet400ForInvalidJsonInput() {
         //given
         var requestEvent = getRequestEventWithValidApiKey()

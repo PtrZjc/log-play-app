@@ -19,6 +19,7 @@ public class RestCommons {
 
     public static final String SERVER_ERROR_MESSAGE = "Internal Server Error";
     public static final String UNSUPPORTED_JSON_ERROR_MESSAGE = "Unsupported json input obtained";
+    public static final String DATABASE_ERROR = "Database error";
     public static final String INVALID_API_KEY = "'Api-Key' header does not match";
 
     public static APIGatewayProxyResponseEvent getResponseEvent() {
@@ -46,7 +47,8 @@ public class RestCommons {
     public static String asErrorJson(String errorCause, Exception exception) {
         return ObjMapper.INSTANCE.get().writeValueAsString(Map.of(
                 "errorCause", errorCause,
-                "details", exception.toString()
+                "exception", exception.getClass().getSimpleName(),
+                "details", exception.getMessage()
         ));
     }
 }
