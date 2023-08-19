@@ -25,6 +25,7 @@ import static pl.zajacp.test.TestData.GAME_DATE;
 import static pl.zajacp.test.TestData.GAME_DESCRIPTION;
 import static pl.zajacp.test.TestData.GAME_NAME;
 import static pl.zajacp.test.TestData.TIMESTAMP;
+import static pl.zajacp.test.TestData.getExemplaryGamesLogRequest;
 import static pl.zajacp.test.assertion.GameRecordAssertion.assertThat;
 import static pl.zajacp.test.builder.GameRecordBuilder.aGameRecord;
 import static pl.zajacp.test.builder.GamesLogBuilder.aGamesLog;
@@ -91,6 +92,19 @@ public class PutGamesLogHandlerIntegrationTest extends BaseIntegrationHandlerTes
 
         assertThat(savedGameRecord)
                 .hasGameDescription(DIFFERENT_DESCRIPTION);
+    }
+
+    @Test
+    public void shouldPutActualGamesLog() throws JsonProcessingException {
+        //given
+        var requestEvent = getRequestEventWithValidApiKey()
+                .withBody(getExemplaryGamesLogRequest());
+
+        //when
+        var responseEvent = putGamesLogHandler.handleRequest(requestEvent, new FakeContext());
+
+        //then
+        assertEquals(204, responseEvent.getStatusCode());
     }
 
     @Test

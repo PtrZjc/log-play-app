@@ -99,12 +99,12 @@ Resources:
     Type: AWS::DynamoDB::Table
     Properties:
       AttributeDefinitions:
-        - AttributeName: user
+        - AttributeName: userName
           AttributeType: S
         - AttributeName: timestamp
           AttributeType: N
       KeySchema:
-        - AttributeName: user
+        - AttributeName: userName
           KeyType: HASH
         - AttributeName: timestamp
           KeyType: RANGE

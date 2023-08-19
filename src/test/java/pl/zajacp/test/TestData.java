@@ -1,5 +1,7 @@
 package pl.zajacp.test;
 
+import lombok.SneakyThrows;
+
 import java.math.BigDecimal;
 
 public class TestData {
@@ -25,4 +27,9 @@ public class TestData {
     public final static BigDecimal PLAYER_4_SCORE = BigDecimal.valueOf(10L);
     public final static BigDecimal PLAYER_5_SCORE = BigDecimal.valueOf(70L);
     public final static String TEST_API_KEY_VALUE = "api-key-value";
+
+    @SneakyThrows
+    public static String getExemplaryGamesLogRequest() {
+        return new String(TestData.class.getClassLoader().getResourceAsStream("exemplary-request.json").readAllBytes());
+    }
 }

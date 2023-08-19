@@ -46,7 +46,7 @@ public class RestCommons {
     public static String asErrorJson(String errorCause, Exception exception) {
         return ObjMapper.INSTANCE.get().writeValueAsString(Map.of(
                 "errorCause", errorCause,
-                "details", exception
+                "details", exception.toString()
         ));
     }
 }

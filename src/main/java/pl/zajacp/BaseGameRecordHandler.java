@@ -31,9 +31,9 @@ public abstract class BaseGameRecordHandler implements RequestHandler<APIGateway
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
         APIGatewayProxyResponseEvent responseEvent;
         try {
-            responseEvent = !apiKeysMatch(requestEvent)
-                    ? getUnauthorizedResponseEvent()
-                    : handleValidRequestEvent(requestEvent);
+            responseEvent = apiKeysMatch(requestEvent)
+                    ? handleValidRequestEvent(requestEvent)
+                    : getUnauthorizedResponseEvent();
         } catch (JsonProcessingException e) {
             context.getLogger().log("JsonProcessingException occurred: " + e);
             responseEvent = getUnsupportedJsonResponseEvent(e);
