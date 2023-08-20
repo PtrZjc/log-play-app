@@ -1,3 +1,6 @@
+aws-creds.env
+.aws*
+
 # Compiled class file
 *.class
 
@@ -6,9 +9,6 @@
 
 # BlueJ files
 *.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
 
 # Package Files #
 *.jar
@@ -23,8 +23,56 @@
 hs_err_pid*
 replay_pid*
 
-.idea*
-target*
-.aws*
+log-play-lambda/.idea*
+log-play-lambda/target*
 
-aws-creds.env
+# Created by https://www.toptal.com/developers/gitignore/api/react,nextjs
+
+### NextJS ###
+# dependencies
+log-play-page/node_modules
+log-play-page/.pnp
+log-play-page/.pnp.js
+
+# testing
+log-play-page/coverage
+
+# next.js
+log-play-page/.next/
+log-play-page/out/
+
+# production
+log-play-page/build
+
+# misc
+log-play-page/.DS_*
+*.pem
+
+# debug
+log-play-page/npm-debug.log*
+log-play-page/yarn-debug.log*
+log-play-page/yarn-error.log*
+log-play-page/.pnpm-debug.log*
+
+# local env files
+log-play-page/.env*.local
+
+# typescript
+log-play-page/*.tsbuildinfo
+log-play-page/next-env.d.ts
+
+### react ###
+log-play-page/logs
+log-play-page/**/*.backup.*
+log-play-page/**/*.back.*
+
+log-play-page/node_modules
+log-play-page/bower_components
+
+log-play-page/*.sublime*
+
+log-play-page/psd
+log-play-page/thumb
+log-play-page/sketch
+
+# End of https://www.toptal.com/developers/gitignore/api/react,nextjs

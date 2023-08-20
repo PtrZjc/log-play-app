@@ -20,9 +20,11 @@ jobs:
           distribution: 'corretto'
 
       - name: Integration tests
+        working-directory: log-play-lambda
         run: mvn test
 
       - name: Create Package
+        working-directory: log-play-lambda
         run: mvn package -DskipTests
 
       - name: Setup AWS SAM

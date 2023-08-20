@@ -10,7 +10,7 @@ Resources:
   GetGameRecord:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./target/log-play-app.jar
+      CodeUri: ./log-play-lambda/target/log-play-app.jar
       Handler: pl.zajacp.GetGameRecordHandler
       Runtime: java17
       MemorySize: 512
@@ -32,7 +32,7 @@ Resources:
   GetGamesLog:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./target/log-play-app.jar
+      CodeUri: ./log-play-lambda/target/log-play-app.jar
       Handler: pl.zajacp.GetGamesLogHandler
       Runtime: java17
       MemorySize: 512
@@ -54,7 +54,7 @@ Resources:
   PutGameRecord:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./target/log-play-app.jar
+      CodeUri: ./log-play-lambda/target/log-play-app.jar
       Handler: pl.zajacp.PutGameRecordHandler
       Runtime: java17
       MemorySize: 512
@@ -76,7 +76,7 @@ Resources:
   PutGamesLog:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./target/log-play-app.jar
+      CodeUri: ./log-play-lambda/target/log-play-app.jar
       Handler: pl.zajacp.PutGamesLogHandler
       Runtime: java17
       MemorySize: 512
@@ -112,7 +112,7 @@ Resources:
   HealthCheckLambda:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./target/log-play-app.jar
+      CodeUri: ./log-play-lambda/target/log-play-app.jar
       Handler: pl.zajacp.HealthCheckHandler
       Runtime: java17
       MemorySize: 512
