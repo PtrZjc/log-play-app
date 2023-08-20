@@ -18,12 +18,12 @@ aws-creds.env
 *.zip
 *.tar.gz
 *.rar
+*.idea*
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
 
-log-play-lambda/.idea*
 log-play-lambda/target*
 
 # Created by https://www.toptal.com/developers/gitignore/api/react,nextjs
@@ -70,7 +70,6 @@ log-play-page/node_modules
 log-play-page/bower_components
 
 log-play-page/*.sublime*
-
 log-play-page/psd
 log-play-page/thumb
 log-play-page/sketch
