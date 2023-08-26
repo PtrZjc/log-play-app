@@ -6,6 +6,8 @@ jobs:
   CI:
     name: CI
     runs-on: ubuntu-latest
+    env:
+      AWS_DEFAULT_REGION: eu-central-1
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -37,7 +39,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-central-1
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
 
       - name: Deploy lambda with SAM
         run: |
@@ -47,5 +49,13 @@ jobs:
             --stack-name log-play-app \
             --s3-bucket pioter-lambdas  \
             --capabilities CAPABILITY_IAM \
-            --region eu-central-1 \
+            --region ${{ env.AWS_DEFAULT_REGION }} \
             --parameter-overrides ApiKey=${{ secrets.API_KEY }}
+
+      - name: Update Swagger UI Api
+        run: |
+          aws s3 cp ./openapi.yml s3://log-play-app-swagger-ui
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ env.AWS_DEFAULT_REGION }}

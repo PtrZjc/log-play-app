@@ -9,7 +9,7 @@ This project contains two applications for tracking and logging board game sessi
 
 ### Overview
 
-The backend is implemented in Java 17 as Lambda functions, and is deployed with AWS SAM. It provides API endpoints to manipulate game logs and records, as well as health check functionality.
+The backend is implemented in Java 17 as Lambda functions and is deployed with AWS SAM. It provides API endpoints to manipulate game logs and records, as well as health check functionality.
 
 ### API Documentation
 
@@ -19,9 +19,11 @@ The available endpoints are:
 - **GET /games/log**: Retrieves the log of all games.
 - **GET /games**: Gets a specific game record.
 - **PUT /games**: Inserts a single game record.
-- **GET /healthcheck**: Health check for the Games Log database.
+- **GET /healthcheck**: Health check with database status.
 
-More details about the API can be found in the [OpenAPI definition file](./openapi.yml).
+#### Swagger UI
+
+Complete API documentation is available through [Swagger UI for log-play-app](http://log-play-app-swagger-ui.s3-website.eu-central-1.amazonaws.com/)
 
 ### Deployment
 

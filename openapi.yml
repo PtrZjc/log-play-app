@@ -1,11 +1,11 @@
 openapi: 3.0.0
 info:
   title: Game Records API
-  version: 1.0.0
+  version: 1.1.0
 paths:
   /games/log:
     put:
-      summary: Performs PUT on every single game record inside a log
+      summary: Performs put operation on each game record inside a log
       security:
         - ApiKeyAuth: []
       requestBody:
@@ -17,6 +17,24 @@ paths:
       responses:
         '200':
           description: OK
+        '400':
+          description: Unsupported JSON input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     get:
       summary: Get log of all games
       security:
@@ -30,6 +48,18 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/GameLog'
+        '403':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /games:
     get:
       summary: Get specific game record
@@ -54,6 +84,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GameLog'
+        '403':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     put:
       summary: Put a single game record
       security:
@@ -67,6 +109,24 @@ paths:
       responses:
         '200':
           description: OK
+        '400':
+          description: Unsupported JSON input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /healthcheck:
     get:
       summary: Health check for Games Log database
@@ -82,7 +142,12 @@ paths:
                     type: string
                   message:
                     type: string
-
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 components:
   securitySchemes:
     ApiKeyAuth:
@@ -124,3 +189,13 @@ components:
                 default: false
               comment:
                 type: string
+    Error:
+      type: object
+      required: [ errorCause ]
+      properties:
+        errorCause:
+          type: string
+        exception:
+          type: string
+        details:
+          type: string
