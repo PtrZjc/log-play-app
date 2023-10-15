@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "antd": "^5.9.4",
+    "dayjs": "^1.11.10",
     "next": "latest",
     "react": "latest",
     "react-dom": "latest"
