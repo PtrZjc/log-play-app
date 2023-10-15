@@ -1,5 +1,6 @@
 import React from 'react';
-import { Button, Input, Form, Select } from 'antd';
+import {Button, Input, Form, Select, AutoComplete} from 'antd';
+import {GAMES, PLAYERS} from "@/app/constants";
 
 const { Option } = Select;
 
@@ -44,16 +45,31 @@ export const GameForm: React.FC = () => {
     form.setFieldsValue({ note: 'Hello world!', gender: 'male' });
   };
 
+  const options = [
+    { value: 'Burns Bay Road' },
+    { value: 'Downing Street' },
+    { value: 'Wall Street' },
+  ];
+
+  const insensitiveCaseIncludes = (input: string, option: any) => {
+    const candidate = option.value.toLowerCase();
+    const search = input.toLowerCase();
+    return candidate.includes(search);
+  };
+
   return (
       <Form
           {...layout}
           form={form}
           name="control-hooks"
           onFinish={onFinish}
-          style={{ maxWidth: 600 }}
+//          style={{ maxWidth: 600 }}
       >
-        <Form.Item name="note" label="Note" rules={[{ required: true }]}>
-          <Input />
+        <Form.Item name="gameName" label="Game" rules={[{ required: true }]}>
+          <AutoComplete
+              options={GAMES.map(player => ({ value: player }))}
+              filterOption={insensitiveCaseIncludes}
+          />
         </Form.Item>
         <Form.Item name="gender" label="Gender" rules={[{ required: true }]}>
           <Select
