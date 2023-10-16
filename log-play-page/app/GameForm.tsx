@@ -24,9 +24,9 @@ const layout = {
   wrapperCol: {span: 16},
 };
 
-const tailLayout = {
-  wrapperCol: {offset: 8, span: 16},
-};
+// const tailLayout = {
+//   wrapperCol: {offset: 8, span: 16},
+// };
 
 type GameFormParams = Record<string, string>
 
@@ -47,11 +47,12 @@ export const GameForm: React.FC = () => {
   
   return (
     <Row justify={"center"}>
-      <Col span={9}>
+      <Col span={12}>
         <Form
           initialValues={
             {
               gameDate: dayjs(),
+              rangeTime: [dayjs().subtract(1, "hour"), dayjs()],
               playerResults: [
                 {playerName: PLAYERS[0]},
                 {playerName: PLAYERS[1]},
@@ -101,20 +102,21 @@ export const GameForm: React.FC = () => {
             {(fields, {add, remove}) => (
               <>
                 {fields.map(({key, name, ...restField}) => (
-                  <Space key={key} align="baseline">
+                  <div key={key} className={"flex flex-row justify-between items-center"}>
                     <Form.Item
+                      className={"w-2/3"}
                       {...restField}
                       name={[name, 'playerName']}
                       rules={[{required: true, message: 'Missing player name'}]}
                     >
                       <AutoComplete
-                        style={{width: 200}}
                         placeholder={"Player Name"}
                         options={PLAYERS.map(player => ({value: player}))}
                         filterOption={insensitiveCaseIncludes}
                       />
                     </Form.Item>
                     <Form.Item
+                      className={"w-1/5"}
                       {...restField}
                       name={[name, 'playerScore']}
                       rules={[{required: true, message: 'Missing last name'}]}
@@ -125,10 +127,14 @@ export const GameForm: React.FC = () => {
                       {...restField}
                       name={[name, 'isWinner']}
                     >
-                      <Checkbox>Won</Checkbox>
+                      
+                      <Checkbox
+                      >Won</Checkbox>
                     </Form.Item>
-                    <MinusCircleOutlined onClick={() => remove(name)}/>
-                  </Space>
+                    <Form.Item>
+                      <MinusCircleOutlined onClick={() => remove(name)}/>
+                    </Form.Item>
+                  </div>
                 ))}
                 <Form.Item>
                   <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined/>}>
@@ -139,7 +145,7 @@ export const GameForm: React.FC = () => {
             )}
           </Form.List>
           
-          <Form.Item {...tailLayout}>
+          <Form.Item>
             <Button type="primary" htmlType="submit">
               Add
             </Button>

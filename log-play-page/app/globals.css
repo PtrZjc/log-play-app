@@ -20,8 +20,12 @@
 /*  border: 1px solid red;*/
 /*}*/
 
-/*[class^='ant-'],*/
-/*[class*=' ant-'],*/
-/*div {*/
-/*  border: 1px solid rgb(128, 128, 128) !important;*/
-/*}*/
+/*
+
+[class^='ant-'],
+[class*=' ant-'],
+div {
+  border: 1px solid rgb(128, 128, 128) !important;
+}
+
+*/
