@@ -1,42 +1,23 @@
-import React, {useEffect, useState} from 'react';
-import {
-  AutoComplete,
-  Button,
-  Checkbox,
-  Col,
-  DatePicker,
-  Form,
-  Input,
-  Row,
-  Select,
-  Space,
-  Switch, TimePicker,
-} from 'antd';
-import {GAMES, PLAYERS} from "@/app/constants";
+import React, {useState} from 'react';
+import {AutoComplete, Button, Checkbox, Col, DatePicker, Form, Input, Row, Select, Switch, TimePicker,} from 'antd';
+import {GAMES, PLAYERS} from "@/app/add/constants";
 import dayjs from "dayjs";
 import {MinusCircleOutlined, PlusOutlined} from "@ant-design/icons";
-import './globals.css';
+import '../globals.css';
+import duration from 'dayjs/plugin/duration';
 
-const {Option} = Select;
-
-const layout = {
-  labelCol: {span: 8},
-  wrapperCol: {span: 16},
-};
-
-// const tailLayout = {
-//   wrapperCol: {offset: 8, span: 16},
-// };
-
-type GameFormParams = Record<string, string>
+dayjs.extend(duration);
 
 export const GameForm: React.FC = () => {
-  
   const [form] = Form.useForm();
-  
   const [fixedTime, setFixedTime] = useState(false);
   
-  const onFinish = (values: any) => console.log(JSON.stringify(values, null, 2));
+  const onFinish = (values: any) => {
+    values.duration = (values["fixedTime"] ?? dayjs.duration(values.rangeTime[1].diff(values.rangeTime[0]))).format("HH:mm");
+    delete values.rangeTime;
+    delete values.fixedTime;
+    console.log(JSON.stringify(values, null, 2));
+  }
   
   const insensitiveCaseIncludes = (input: string, option: any) => {
     const candidate = option.value.toLowerCase();
@@ -53,6 +34,8 @@ export const GameForm: React.FC = () => {
             {
               gameDate: dayjs(),
               rangeTime: [dayjs().subtract(1, "hour"), dayjs()],
+              // 1 hour
+              fixedTime: dayjs().startOf("day").add(1, "hour"),
               playerResults: [
                 {playerName: PLAYERS[0]},
                 {playerName: PLAYERS[1]},
@@ -119,7 +102,6 @@ export const GameForm: React.FC = () => {
                       className={"w-1/5"}
                       {...restField}
                       name={[name, 'playerScore']}
-                      rules={[{required: true, message: 'Missing last name'}]}
                     >
                       <Input type="number" placeholder="Score"/>
                     </Form.Item>
