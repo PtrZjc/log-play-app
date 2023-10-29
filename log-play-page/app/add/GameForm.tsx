@@ -57,7 +57,7 @@ export const GameForm: React.FC = () => {
           </Form.Item>
           <div className={"flex justify-between items-center"}>
             <Switch
-              className={"-mt-6"}
+              className={"-mt-6 mr-2"}
               checkedChildren="Fixed Time"
               unCheckedChildren="Time Range"
               onChange={setFixedTime}
@@ -85,7 +85,7 @@ export const GameForm: React.FC = () => {
             {(fields, {add, remove}) => (
               <>
                 {fields.map(({key, name, ...restField}) => (
-                  <div key={key} className={"flex flex-row justify-between items-center"}>
+                  <div key={key} className={"flex flex-row justify-between items-center space-x-2"}>
                     <Form.Item
                       className={"w-2/3"}
                       {...restField}
@@ -111,7 +111,7 @@ export const GameForm: React.FC = () => {
                     >
                       
                       <Checkbox
-                      >Won</Checkbox>
+                      >👑</Checkbox>
                     </Form.Item>
                     <Form.Item>
                       <MinusCircleOutlined onClick={() => remove(name)}/>
