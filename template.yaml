@@ -130,34 +130,8 @@ Resources:
           Properties:
             Path: /healthcheck
             Method: GET
-  PzjcDomain:
-    Type: 'AWS::ApiGateway::DomainName'
-    Properties:
-      DomainName: lpa-api.pzjc.online
-      EndpointConfiguration:
-        Types:
-          - REGIONAL
-      RegionalCertificateArn: arn:aws:acm:eu-central-1:469283624338:certificate/4a7f5464-42cc-484a-9c89-13f1f859c5ca
-  PzjcBasePathMapping:
-    Type: 'AWS::ApiGateway::BasePathMapping'
-    Properties:
-      DomainName: !Ref PzjcDomain
-      RestApiId: !Ref ServerlessRestApi
-      Stage: Prod
-  PzjcRoute53Record:
-    Type: 'AWS::Route53::RecordSet'
-    Properties:
-      HostedZoneName: pzjc.online.
-      Name: lpa-api.pzjc.online
-      Type: A
-      AliasTarget:
-        HostedZoneId: !GetAtt PzjcDomain.RegionalHostedZoneId
-        DNSName: !GetAtt PzjcDomain.RegionalDomainName
-
+            
 Outputs:
   WebEndpoint:
     Description: "API Gateway endpoint URL"
-    Value: !Sub "https://lpa-api.pzjc.online/Prod/"
-  WebDirectEndpoint:
-    Description: "API Gateway endpoint URL direct"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
