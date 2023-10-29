@@ -29,13 +29,32 @@ jobs:
           java-version: '17'
           distribution: 'corretto'
 
-      - name: Integration tests
+      - name: 'Lambda: Integration tests'
         working-directory: log-play-lambda
         run: mvn test
 
-      - name: Create Package
+      - name: 'Lambda: Create Package'
         working-directory: log-play-lambda
         run: mvn package -DskipTests
+
+      - name: Cache Node.js modules
+        uses: actions/cache@v3
+        with:
+          path: log-play-page/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: ${{ runner.os }}-node-
+
+      - name: 'Page: Setup Node.js'
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: 'Page: Build app'
+        working-directory: log-play-page
+        run: |
+          npm install -g yarn
+          yarn install --frozen-lockfile
+          yarn build
 
       - name: Setup AWS SAM
         uses: aws-actions/setup-sam@v2
@@ -60,10 +79,10 @@ jobs:
             --region ${{ env.AWS_DEFAULT_REGION }} \
             --parameter-overrides ApiKey=${{ secrets.API_KEY }}
 
+      - name: Upload log-play-page to S3
+        run: |
+          aws s3 sync log-play-page/out/ s3://log-play-page-test
+
       - name: Update Swagger UI Api
         run: |
           aws s3 cp ./openapi.yml s3://log-play-app-swagger-ui
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ env.AWS_DEFAULT_REGION }}
