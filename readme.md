@@ -46,4 +46,4 @@ The frontend is planned to be built using the following technologies:
 
 ### Status
 
-The frontend is currently under development.
+The frontend is currently under development. The current mocked static page can be found at [log-play-page](http://log-play-page-test.s3-website.eu-central-1.amazonaws.com).
