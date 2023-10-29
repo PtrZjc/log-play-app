@@ -1,6 +1,7 @@
 aws-creds.env
 .aws*
 
+*iml
 # Compiled class file
 *.class
 

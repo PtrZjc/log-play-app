@@ -8,12 +8,19 @@ paths:
       summary: Performs put operation on each game record inside a log
       security:
         - ApiKeyAuth: []
+      parameters:
+        - name: User-Name
+          in: header
+          description: If absent, a global user will be used
+          required: false
+          schema:
+            type: string
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/GameLog'
+              $ref: '#/components/schemas/GamesLog'
       responses:
         '200':
           description: OK
@@ -39,15 +46,20 @@ paths:
       summary: Get log of all games
       security:
         - ApiKeyAuth: []
+      parameters:
+        - name: User-Name
+          in: header
+          description: If absent, a global user will be used
+          required: false
+          schema:
+            type: string
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/GameLog'
+                $ref: '#/components/schemas/GamesLog'
         '403':
           description: Unauthorized
           content:
@@ -66,9 +78,9 @@ paths:
       security:
         - ApiKeyAuth: []
       parameters:
-        - name: gameName
-          in: query
-          required: true
+        - name: User-Name
+          in: header
+          required: false
           schema:
             type: string
         - name: timestamp
@@ -83,7 +95,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GameLog'
+                $ref: '#/components/schemas/GameRecord'
         '403':
           description: Unauthorized
           content:
@@ -100,6 +112,12 @@ paths:
       summary: Put a single game record
       security:
         - ApiKeyAuth: []
+      parameters:
+        - name: User-Name
+          in: header
+          required: false
+          schema:
+            type: string
       requestBody:
         required: true
         content:
@@ -130,6 +148,12 @@ paths:
   /healthcheck:
     get:
       summary: Health check for Games Log database
+      parameters:
+        - name: User-Name
+          in: header
+          required: false
+          schema:
+            type: string
       responses:
         '200':
           description: OK
@@ -155,7 +179,7 @@ components:
       in: header
       name: Api-Key
   schemas:
-    GameLog:
+    GamesLog:
       type: object
       properties:
         gamesLog:
@@ -164,13 +188,11 @@ components:
             $ref: '#/components/schemas/GameRecord'
     GameRecord:
       type: object
-      required: [ gameName, timestamp, gameDate, playerResults ]
+      required: [ timestamp, gameDate, playerResults ]
       properties:
         timestamp:
           type: integer
           format: int64
-        gameName:
-          type: string
         gameDate:
           type: string
           format: date
