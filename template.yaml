@@ -7,6 +7,17 @@ Parameters:
     NoEcho: true
 
 Resources:
+  LogPlayApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      MethodSettings:
+        - ResourcePath: "/*"
+          HttpMethod: GET
+          ThrottlingRateLimit: 3
+        - ResourcePath: "/*"
+          HttpMethod: PUT
+          ThrottlingRateLimit: 1
   GetGameRecord:
     Type: AWS::Serverless::Function
     Properties:
@@ -27,6 +38,7 @@ Resources:
         Api:
           Type: Api
           Properties:
+            RestApiId: !Ref LogPlayApi
             Path: /games
             Method: GET
   GetGamesLog:
@@ -49,6 +61,7 @@ Resources:
         Api:
           Type: Api
           Properties:
+            RestApiId: !Ref LogPlayApi
             Path: /games/log
             Method: GET
   PutGameRecord:
@@ -71,6 +84,7 @@ Resources:
         Api:
           Type: Api
           Properties:
+            RestApiId: !Ref LogPlayApi
             Path: /games
             Method: PUT
   PutGamesLog:
@@ -95,20 +109,6 @@ Resources:
           Properties:
             Path: /games/log
             Method: PUT
-  GamesLogTable:
-    Type: AWS::DynamoDB::Table
-    Properties:
-      AttributeDefinitions:
-        - AttributeName: userName
-          AttributeType: S
-        - AttributeName: timestamp
-          AttributeType: N
-      KeySchema:
-        - AttributeName: userName
-          KeyType: HASH
-        - AttributeName: timestamp
-          KeyType: RANGE
-      BillingMode: PAY_PER_REQUEST
   HealthCheckLambda:
     Type: AWS::Serverless::Function
     Properties:
@@ -128,9 +128,24 @@ Resources:
         Api:
           Type: Api
           Properties:
+            RestApiId: !Ref LogPlayApi
             Path: /healthcheck
             Method: GET
-            
+  GamesLogTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: userName
+          AttributeType: S
+        - AttributeName: timestamp
+          AttributeType: N
+      KeySchema:
+        - AttributeName: userName
+          KeyType: HASH
+        - AttributeName: timestamp
+          KeyType: RANGE
+      BillingMode: PAY_PER_REQUEST
+
 Outputs:
   WebEndpoint:
     Description: "API Gateway endpoint URL"
