@@ -1,4 +1,6 @@
-aws-creds.env
+**.env
+**private.env.json
+
 .aws*
 .DS_Store
 

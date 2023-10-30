@@ -1,0 +1,34 @@
+# log-play
+
+###
+# @name healthcheck
+GET {{base-path}}/healthcheck
+Api-Key: {{api-key}}
+
+###
+# @name Get game record
+GET {{base-path}}/games?
+    timestamp=1582156800
+Api-Key: {{api-key}}
+
+###
+# @name Get games log
+GET {{base-path}}/games/log
+Api-Key: {{api-key}}
+
+
+###
+# @name Put game record
+PUT {{base-path}}/games
+Api-Key: {{api-key}}
+Content-Type: application/json
+
+< ./putGameRecord.json
+
+###
+# @name Put games log
+PUT {{base-path}}/games/log
+Api-Key: {{api-key}}
+Content-Type: application/json
+
+< ./putGamesLog.json

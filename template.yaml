@@ -11,12 +11,14 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       StageName: Prod
+#      DefinitionBody:
+#        Fn::Transform:
+#          Name: 'AWS::Include'
+#          Parameters:
+#            Location: s3://log-play-app-swagger-ui/openapi.yml
       MethodSettings:
-        - ResourcePath: "/*"
-          HttpMethod: GET
-          ThrottlingRateLimit: 3
-        - ResourcePath: "/*"
-          HttpMethod: PUT
+        - ResourcePath: '/*'
+          HttpMethod: '*'
           ThrottlingRateLimit: 1
   GetGameRecord:
     Type: AWS::Serverless::Function

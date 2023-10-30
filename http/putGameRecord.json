@@ -1,0 +1,40 @@
+{
+  "timestamp": 1582156800,
+  "gameName": "7 cudów świata",
+  "gameDate": "2020-02-20",
+  "gameDescription": null,
+  "solo": false,
+  "duration": null,
+  "playerResults": [
+    {
+      "playerName": "Ja",
+      "playerScore": 49,
+      "comment": null,
+      "isWinner": false
+    },
+    {
+      "playerName": "Ilona",
+      "playerScore": 37,
+      "comment": null,
+      "isWinner": false
+    },
+    {
+      "playerName": "Paweł od Domki",
+      "playerScore": 44,
+      "comment": null,
+      "isWinner": false
+    },
+    {
+      "playerName": "Domka Szalona",
+      "playerScore": 50,
+      "comment": null,
+      "isWinner": true
+    },
+    {
+      "playerName": "Marta Ilony",
+      "playerScore": 48,
+      "comment": null,
+      "isWinner": false
+    }
+  ]
+}

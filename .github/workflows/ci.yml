@@ -68,6 +68,14 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
 
+      - name: Update Swagger UI Api
+        run: |
+          aws s3 cp ./openapi.yml s3://log-play-app-swagger-ui
+
+      - name: Upload log-play-page to S3
+        run: |
+          aws s3 sync log-play-page/out/ s3://log-play-page-test
+
       - name: Deploy lambda with SAM
         run: |
           sam deploy \
@@ -78,11 +86,3 @@ jobs:
             --capabilities CAPABILITY_IAM \
             --region ${{ env.AWS_DEFAULT_REGION }} \
             --parameter-overrides ApiKey=${{ secrets.API_KEY }}
-
-      - name: Upload log-play-page to S3
-        run: |
-          aws s3 sync log-play-page/out/ s3://log-play-page-test
-
-      - name: Update Swagger UI Api
-        run: |
-          aws s3 cp ./openapi.yml s3://log-play-app-swagger-ui
