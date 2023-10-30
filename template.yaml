@@ -11,11 +11,11 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       StageName: Prod
-#      DefinitionBody:
-#        Fn::Transform:
-#          Name: 'AWS::Include'
-#          Parameters:
-#            Location: s3://log-play-app-swagger-ui/openapi.yml
+      DefinitionBody:
+        Fn::Transform:
+          Name: 'AWS::Include'
+          Parameters:
+            Location: openapi.yml
       MethodSettings:
         - ResourcePath: '/*'
           HttpMethod: '*'
@@ -151,4 +151,4 @@ Resources:
 Outputs:
   WebEndpoint:
     Description: "API Gateway endpoint URL"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+    Value: !Sub "https://${LogPlayApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
