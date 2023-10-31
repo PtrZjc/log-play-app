@@ -92,6 +92,31 @@ paths:
         passthroughBehavior: "when_no_match"
         httpMethod: "POST"
         type: "aws_proxy"
+    options:
+      summary: CORS support
+      description: Enable CORS by returning correct headers
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: '{"statusCode" : 204}'
+        responses:
+          default:
+            statusCode: "204"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,PUT'"
+            responseTemplates:
+              application/json: ''
+      responses:
+        '204':
+          description: No content
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
   /games:
     get:
       summary: Get specific game record
@@ -181,6 +206,31 @@ paths:
         passthroughBehavior: "when_no_match"
         httpMethod: "POST"
         type: "aws_proxy"
+    options:
+      summary: CORS support
+      description: Enable CORS by returning correct headers
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: '{"statusCode" : 204}'
+        responses:
+          default:
+            statusCode: "204"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,PUT'"
+            responseTemplates:
+              application/json: ''
+      responses:
+        '204':
+          description: No content
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
   /healthcheck:
     get:
       summary: Health check for Games Log database
