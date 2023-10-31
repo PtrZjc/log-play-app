@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.SneakyThrows;
 import pl.zajacp.shared.ObjMapper;
 
+import java.net.http.HttpHeaders;
 import java.util.Map;
 import java.util.Optional;
 
@@ -15,7 +16,10 @@ public class RestCommons {
     public static final String API_KEY_HEADER = "Api-Key";
     public final static String API_KEY_ENV = "API_KEY";
 
-    public static final Map<String, String> DEFAULT_HEADERS = Map.of("Content-Type", "application/json");
+    public static final Map<String, String> DEFAULT_HEADERS = Map.of(
+            "Content-Type", "application/json",
+            "Access-Control-Allow-Origin", "*"
+    );
 
     public static final String SERVER_ERROR_MESSAGE = "Internal Server Error";
     public static final String UNSUPPORTED_JSON_ERROR_MESSAGE = "Unsupported json input obtained";

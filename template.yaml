@@ -20,6 +20,7 @@ Resources:
         - ResourcePath: '/*'
           HttpMethod: '*'
           ThrottlingRateLimit: 1
+          ThrottlingBurstLimit: 1
   GetGameRecord:
     Type: AWS::Serverless::Function
     Properties:

@@ -24,6 +24,10 @@ paths:
       responses:
         '200':
           description: OK
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
         '400':
           description: Unsupported JSON input
           content:
@@ -66,6 +70,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GamesLog'
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
         '403':
           description: Unauthorized
           content:
@@ -108,6 +116,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GameRecord'
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
         '403':
           description: Unauthorized
           content:
@@ -190,6 +202,10 @@ paths:
                     type: string
                   message:
                     type: string
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
         '500':
           description: Internal Server Error
           content:
