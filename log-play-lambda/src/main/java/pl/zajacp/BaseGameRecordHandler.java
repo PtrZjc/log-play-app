@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
 import pl.zajacp.model.GameRecord;
 import pl.zajacp.repository.DynamoDbRepository;
+import pl.zajacp.shared.ObjMapper;
 import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 
 import java.util.Optional;
@@ -33,6 +34,8 @@ public abstract class BaseGameRecordHandler implements RequestHandler<APIGateway
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent requestEvent, Context context) {
         APIGatewayProxyResponseEvent responseEvent;
         try {
+            context.getLogger().log("Request received: " + ObjMapper.INSTANCE.get().writeValueAsString(requestEvent));
+
             responseEvent = apiKeysMatch(requestEvent)
                     ? handleValidRequestEvent(requestEvent)
                     : getUnauthorizedResponseEvent();
