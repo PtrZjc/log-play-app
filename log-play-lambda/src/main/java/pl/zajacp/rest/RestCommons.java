@@ -13,18 +13,19 @@ import java.util.Optional;
 public class RestCommons {
 
     public static final String USER_HEADER = "User-Name";
-    public static final String API_KEY_HEADER = "Api-Key";
+    public static final String API_KEY_HEADER = "X-Api-Key";
     public final static String API_KEY_ENV = "API_KEY";
 
     public static final Map<String, String> DEFAULT_HEADERS = Map.of(
             "Content-Type", "application/json",
-            "Access-Control-Allow-Origin", "*"
+            "Access-Control-Allow-Origin", "*",
+            "Access-Control-Allow-Headers", "Content-Type,X-Amz-Date,Authorization,X-Api-Key"
     );
 
     public static final String SERVER_ERROR_MESSAGE = "Internal Server Error";
     public static final String UNSUPPORTED_JSON_ERROR_MESSAGE = "Unsupported json input obtained";
     public static final String DATABASE_ERROR = "Database error";
-    public static final String INVALID_API_KEY = "'Api-Key' header does not match";
+    public static final String INVALID_API_KEY = "'X-Api-Key' header does not match";
 
     public static APIGatewayProxyResponseEvent getResponseEvent() {
         return new APIGatewayProxyResponseEvent().withHeaders(DEFAULT_HEADERS);

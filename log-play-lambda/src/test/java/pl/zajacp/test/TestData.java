@@ -26,7 +26,7 @@ public class TestData {
     public final static BigDecimal PLAYER_3_SCORE = BigDecimal.valueOf(90L);
     public final static BigDecimal PLAYER_4_SCORE = BigDecimal.valueOf(10L);
     public final static BigDecimal PLAYER_5_SCORE = BigDecimal.valueOf(70L);
-    public final static String TEST_API_KEY_VALUE = "api-key-value";
+    public final static String TEST_API_KEY_VALUE = "X-Api-Key-value";
 
     @SneakyThrows
     public static String getExemplaryGamesLogRequest() {

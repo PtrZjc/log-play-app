@@ -54,9 +54,9 @@ jobs:
         with:
           path: |
             ~/.npm
-            ${{ github.workspace }}/.next/cache
+            log-play-page/.next/cache
           key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
-          restore-keys: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+          restore-keys: ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}-
 
       - name: 'Page: Build app'
         working-directory: log-play-page
