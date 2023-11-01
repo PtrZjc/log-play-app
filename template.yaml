@@ -19,6 +19,8 @@ Resources:
       MethodSettings:
         - ResourcePath: '/*'
           HttpMethod: '*'
+          LoggingLevel: INFO
+          MetricsEnabled: true
           ThrottlingRateLimit: 1
           ThrottlingBurstLimit: 1
   GetGameRecord:
