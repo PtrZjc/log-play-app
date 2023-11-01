@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Log Play App API
-  version: 1.1.0
+  version: 1.2.0
 paths:
   /games/log:
     put:
@@ -26,6 +26,12 @@ paths:
           description: OK
           headers:
             Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
               schema:
                 type: string
         '400':
@@ -74,6 +80,12 @@ paths:
             Access-Control-Allow-Origin:
               schema:
                 type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
         '403':
           description: Unauthorized
           content:
@@ -103,8 +115,9 @@ paths:
           default:
             statusCode: "204"
             responseParameters:
-              method.response.header.Access-Control-Allow-Origin: "'*'"
-              method.response.header.Access-Control-Allow-Methods: "'GET,PUT'"
+              method.response.header.Access-Control-Allow-Headers: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key'''
+              method.response.header.Access-Control-Allow-Methods: '''*'''
+              method.response.header.Access-Control-Allow-Origin: '''*'''
             responseTemplates:
               application/json: ''
       responses:
@@ -112,6 +125,9 @@ paths:
           description: No content
           headers:
             Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
               schema:
                 type: string
             Access-Control-Allow-Methods:
@@ -143,6 +159,12 @@ paths:
                 $ref: '#/components/schemas/GameRecord'
           headers:
             Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
               schema:
                 type: string
         '403':
@@ -182,6 +204,16 @@ paths:
       responses:
         '200':
           description: OK
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
         '400':
           description: Unsupported JSON input
           content:
@@ -217,8 +249,9 @@ paths:
           default:
             statusCode: "204"
             responseParameters:
-              method.response.header.Access-Control-Allow-Origin: "'*'"
-              method.response.header.Access-Control-Allow-Methods: "'GET,PUT'"
+              method.response.header.Access-Control-Allow-Headers: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key'''
+              method.response.header.Access-Control-Allow-Methods: '''*'''
+              method.response.header.Access-Control-Allow-Origin: '''*'''
             responseTemplates:
               application/json: ''
       responses:
@@ -226,6 +259,9 @@ paths:
           description: No content
           headers:
             Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
               schema:
                 type: string
             Access-Control-Allow-Methods:
@@ -256,6 +292,12 @@ paths:
             Access-Control-Allow-Origin:
               schema:
                 type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
         '500':
           description: Internal Server Error
           content:
@@ -268,12 +310,41 @@ paths:
         passthroughBehavior: "when_no_match"
         httpMethod: "POST"
         type: "aws_proxy"
+    options:
+      summary: CORS support
+      description: Enable CORS by returning correct headers
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: '{"statusCode" : 204}'
+        responses:
+          default:
+            statusCode: "204"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key'''
+              method.response.header.Access-Control-Allow-Methods: '''*'''
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+            responseTemplates:
+              application/json: ''
+      responses:
+        '204':
+          description: No content
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
 components:
   securitySchemes:
     ApiKeyAuth:
       type: apiKey
       in: header
-      name: Api-Key
+      name: X-Api-Key
   schemas:
     GamesLog:
       type: object
