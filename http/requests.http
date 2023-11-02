@@ -1,34 +1,47 @@
-# log-play
-
 ###
 # @name healthcheck
 GET {{base-path}}/healthcheck
-Api-Key: {{api-key}}
+X-Api-Key: {{X-Api-Key}}
+
+###
+# @name Options healthcheck
+OPTIONS {{base-path}}/healthcheck
+
+# GAMES
 
 ###
 # @name Get game record
 GET {{base-path}}/games?
-    timestamp=1582156800
-Api-Key: {{api-key}}
-
-###
-# @name Get games log
-GET {{base-path}}/games/log
-Api-Key: {{api-key}}
-
+    timestamp=1690675200
+X-Api-Key: {{X-Api-Key}}
 
 ###
 # @name Put game record
 PUT {{base-path}}/games
-Api-Key: {{api-key}}
+X-Api-Key: {{X-Api-Key}}
 Content-Type: application/json
 
 < ./putGameRecord.json
 
 ###
+# @name Options game record
+OPTIONS {{base-path}}/games
+
+# GAMES LOG
+
+###
+# @name Get games log
+GET {{base-path}}/games/log
+X-Api-Key: {{X-Api-Key}}
+
+###
+# @name Options games log
+OPTIONS {{base-path}}/games/log
+
+###
 # @name Put games log
 PUT {{base-path}}/games/log
-Api-Key: {{api-key}}
+X-Api-Key: {{X-Api-Key}}
 Content-Type: application/json
 
 < ./putGamesLog.json
