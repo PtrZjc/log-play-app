@@ -1,7 +1,17 @@
+'use client'
+
+import {useEffect} from "react";
+import {getGamesLog} from "@/app/apiClient";
+
 export default function Home() {
-  return (
-    <main className="pt-24">
-      HI There!
-    </main>
-  )
+
+    useEffect(() => {
+        getGamesLog();
+    }, []);
+
+    return (
+        <main className="pt-24">
+            HI There!
+        </main>
+    )
 }
