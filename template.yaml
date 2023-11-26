@@ -166,9 +166,34 @@ Resources:
             Action: sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs
-
+  PzjcDomain:
+    Type: 'AWS::ApiGateway::DomainName'
+    Properties:
+      DomainName: log-play-api.pzjc.pl
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+      RegionalCertificateArn: arn:aws:acm:eu-central-1:469283624338:certificate/a238a992-64af-4c56-9c98-4f285300379d
+  PzjcBasePathMapping:
+    Type: 'AWS::ApiGateway::BasePathMapping'
+    Properties:
+      DomainName: !Ref PzjcDomain
+      RestApiId: !Ref LogPlayApi
+      Stage: Prod
+  PzjcRoute53Record:
+    Type: 'AWS::Route53::RecordSet'
+    Properties:
+      HostedZoneName: pzjc.pl.
+      Name: log-play-api.pzjc.pl
+      Type: A
+      AliasTarget:
+        HostedZoneId: !GetAtt PzjcDomain.RegionalHostedZoneId
+        DNSName: !GetAtt PzjcDomain.RegionalDomainName
 
 Outputs:
   WebEndpoint:
+    Description: "API Gateway endpoint URL"
+    Value: !Sub "https://log-play-api.pzjc.pl/Prod/"
+  WebDirectEndpoint:
     Description: "API Gateway endpoint URL"
     Value: !Sub "https://${LogPlayApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
