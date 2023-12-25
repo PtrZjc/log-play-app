@@ -23,10 +23,10 @@ Resources:
           MetricsEnabled: true
           ThrottlingRateLimit: 1
           ThrottlingBurstLimit: 1
-      AccessLogSetting:
-        DestinationArn: !GetAtt ApiGatewayLoggingRole.Arn
-        # https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
-        Format: '$context.httpMethod $context.resourcePath $context.integration.status'
+#      AccessLogSetting:
+#        DestinationArn: !GetAtt ApiGatewayLoggingRole.Arn
+#        # https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
+#        Format: '$context.httpMethod $context.resourcePath $context.integration.status'
   GetGameRecord:
     Type: AWS::Serverless::Function
     Properties:
@@ -154,18 +154,18 @@ Resources:
         - AttributeName: timestamp
           KeyType: RANGE
       BillingMode: PAY_PER_REQUEST
-  ApiGatewayLoggingRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: apigateway.amazonaws.com
-            Action: sts:AssumeRole
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs
+#  ApiGatewayLoggingRole:
+#    Type: AWS::IAM::Role
+#    Properties:
+#      AssumeRolePolicyDocument:
+#        Version: '2012-10-17'
+#        Statement:
+#          - Effect: Allow
+#            Principal:
+#              Service: apigateway.amazonaws.com
+#            Action: sts:AssumeRole
+#      ManagedPolicyArns:
+#        - arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs
   PzjcDomain:
     Type: 'AWS::ApiGateway::DomainName'
     Properties:
